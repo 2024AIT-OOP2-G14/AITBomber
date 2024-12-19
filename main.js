@@ -22,15 +22,23 @@ const gSpeed = 3;
 //プレイヤー座標
 let gx;
 let gy;
-
+//プレイヤー番号により開始位置を変える(0:左上, 1:右上, 2:左下, 3:右下)
 switch (gN) {
     case 0:
         gx = squareSize;
         gy = squareSize;
         break;
     case 1:
-        gx = WIDTH-squareSize;
+        gx = WIDTH-2*squareSize;
         gy = squareSize;
+        break;
+    case 2:
+        gx = squareSize;
+        gy = HEIGHT-2*squareSize;
+        break;
+    case 3:
+        gx = WIDTH-2*squareSize;
+        gy = HEIGHT-2*squareSize;
         break;
 }
 
