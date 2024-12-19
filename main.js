@@ -57,10 +57,13 @@ let visible = 1;    //見えるか
 
 function onPaint ()
 {
-    //frameParSecond管理（だいたい60fpsくらいになるはず）
+    //frameParSecond管理（60fps）
+
+    //初回は実時間をgTimerに送る
     if( !gTimer ) {
         gTimer = performance.now();
     }
+    //16.67ミリ秒たったら画面を更新することで、どんな環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
     if( gTimer + 16.67 < performance.now() ) {
         gTimer += 16.67;
 
@@ -71,24 +74,22 @@ function onPaint ()
             gy -= gKey[87] * gSpeed;
             gy += gKey[83] * gSpeed;
         }
-    }
 
-
-//画面端の壁判定
-    if(gx < squareSize) {
-        gx += gSpeed;
+        //画面端の壁判定
+        if(gx < squareSize) {
+            gx += gSpeed;
+        }
+        if(gx > WIDTH - 2*squareSize) {
+            gx -= gSpeed;
+        }
+        if(gy < squareSize ) {
+            gy += gSpeed;
+        }
+        if(gy > HEIGHT - 2*squareSize) {
+            gy -= gSpeed;
+        }
+        draw();
     }
-    if(gx > WIDTH - 2*squareSize) {
-        gx -= gSpeed;
-    }
-    if(gy < squareSize ) {
-        gy += gSpeed;
-    }
-    if(gy > HEIGHT - 2*squareSize) {
-        gy -= gSpeed;
-    }
-
-    draw();
     requestAnimationFrame( onPaint );
 }
 
