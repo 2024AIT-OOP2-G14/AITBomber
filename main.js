@@ -27,6 +27,7 @@ const gSpeed = 3;
 //プレイヤー座標
 let gx;
 let gy;
+
 //プレイヤー番号により開始位置を変える(0:左上, 1:右上, 2:左下, 3:右下)
 switch (gN) {
     case 0:
@@ -62,6 +63,9 @@ user.style.position = "absolute";   //画面左上を(0,0)とした絶対位置�
 let operable = 1;   //操作できるか
 let visible = 1;    //見えるか
 
+//マップ生成
+var map = new Map(wblock,hblock);
+
 function onPaint ()
 {
     //frameParSecond管理（60fps）
@@ -75,26 +79,21 @@ function onPaint ()
         gTimer += 16.67;
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
+        //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
         if(operable) {
-            gx -= gKey[65] * gSpeed;
+            gx -= gKey[65] * gSpeed;    //g[65]=1（sキーが押し込まれた）
+            if (map.isInsideWall(gx,gy,map.bombermap)){gx += gKey[65] * gSpeed} //ダメならもどす
+
             gx += gKey[68] * gSpeed;
+            if (map.isInsideWall(gx,gy,map.bombermap)){gx -= gKey[68] * gSpeed}
+
             gy -= gKey[87] * gSpeed;
+            if (map.isInsideWall(gx,gy,map.bombermap)){gy += gKey[87] * gSpeed}
+
             gy += gKey[83] * gSpeed;
+            if (map.isInsideWall(gx,gy,map.bombermap)){gy -= gKey[83] * gSpeed}
         }
 
-        //画面端の壁判定
-        if(gx < squareSize) {
-            gx += gSpeed;
-        }
-        if(gx > WIDTH - 2*squareSize) {
-            gx -= gSpeed;
-        }
-        if(gy < squareSize ) {
-            gy += gSpeed;
-        }
-        if(gy > HEIGHT - 2*squareSize) {
-            gy -= gSpeed;
-        }
         draw();
     }
     requestAnimationFrame( onPaint );
@@ -114,16 +113,13 @@ function draw()
     g.fillRect( squareSize, squareSize, WIDTH-2*squareSize, HEIGHT-2*squareSize);
 
     //壁の描写
-    var map = new Map(wblock,hblock);
-    var bombermap=map.getbombmap();
     for(var i=0; i<hblock; i++){
         for(var j=0; j<wblock; j++){
-            if(bombermap[i][j]==1){
-                g.drawImage(kabe,j*squareSize,i*squareSize,rWidth, rHeight)
+            if(map.bombermap[i][j]==1){
+                g.drawImage(kabe,j*squareSize,i*squareSize,squareSize,squareSize)
             }
         }
     }
-
 
     //プレイヤー描画
     if(visible) {
