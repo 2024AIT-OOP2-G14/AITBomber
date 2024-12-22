@@ -6,12 +6,17 @@ let gTimer;
 //1マスの大きさ(縦横共通)
 const squareSize = 16 * 2
 
+//縦横ブロック数
+const wblock=15;
+const hblock=13;
 //画面サイズ
-const WIDTH = squareSize * 15;  
-const HEIGHT = squareSize * 13;
+const WIDTH = squareSize * wblock;  
+const HEIGHT = squareSize * hblock;
 
 //プレイヤー情報
 const user = document.createElement('img');
+//壁情報
+const kabe = document.createElement('img');
 
 //プレイヤー番号
 let gN = 0;
@@ -44,6 +49,8 @@ switch (gN) {
 
 //プレイヤーの画像
 user.src = "image/hito.png";
+//壁画像
+kabe.src = "image/kabe.png";
 
 //プレイヤーの大きさを決める
 let orgWidth  = user.width;     // 元画像の横幅を保存
@@ -105,6 +112,17 @@ function draw()
     //緑色地面描画
     g.fillStyle = "#006400";
     g.fillRect( squareSize, squareSize, WIDTH-2*squareSize, HEIGHT-2*squareSize);
+
+    //壁の描写
+    var map = new Map(wblock,hblock);
+    var bombermap=map.getbombmap();
+    for(var i=0; i<hblock; i++){
+        for(var j=0; j<wblock; j++){
+            if(bombermap[i][j]==1){
+                g.drawImage(kabe,j*squareSize,i*squareSize,rWidth, rHeight)
+            }
+        }
+    }
 
 
     //プレイヤー描画
