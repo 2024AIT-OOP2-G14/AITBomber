@@ -19,49 +19,44 @@ const user = document.createElement('img');
 const kabe = document.createElement('img');
 
 //プレイヤー番号
-let gN = 0;
 
-//プレイヤーのスピード、この数が座標にそのまま毎フレーム足されていく
+let myN = 0;
+
+//プレイヤーの初期スピード、この数が座標にそのまま毎フレーム足されていく
 const gSpeed = 3;
 
-//プレイヤー座標
-let gx;
-let gy;
-
-//プレイヤー番号により開始位置を変える(0:左上, 1:右上, 2:左下, 3:右下)
-switch (gN) {
+//プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
+switch (myN) {
     case 0:
-        gx = squareSize;
-        gy = squareSize;
+        var me = new Player(myN,squareSize,squareSize,gSpeed);
         break;
     case 1:
-        gx = WIDTH-2*squareSize;
-        gy = squareSize;
+        var me = new Player(myN,WIDTH-2*squareSize,squareSize,gSpeed);
         break;
     case 2:
-        gx = squareSize;
-        gy = HEIGHT-2*squareSize;
+        var me = new Player(myN,squareSize,HEIGHT-2*squareSize,gSpeed);
         break;
     case 3:
-        gx = WIDTH-2*squareSize;
-        gy = HEIGHT-2*squareSize;
+        var me = new Player(myN,WIDTH-2*squareSize,HEIGHT-2*squareSize,gSpeed);
         break;
 }
 
-//プレイヤーの画像
-user.src = "image/hito.png";
 //壁画像
 kabe.src = "image/kabe.png";
 
-//プレイヤーの大きさを決める
-let orgWidth  = user.width;     // 元画像の横幅を保存
-let orgHeight = user.height;    // 元画像の高さを保存
-let rWidth = squareSize         // 任意の数を入れることで、プレイヤーの大きさが決定される
-let rHeight = orgHeight * (rWidth / orgWidth);  // rWidthに対して同じ比で高さも決定する。
-user.style.position = "absolute";   //画面左上を(0,0)とした絶対位置でプレイヤーを配置するという状態
+let rWidth = squareSize;         // 任意の数を入れることで、プレイヤーの大きさが決定される
+let rHeight;
 
-let operable = 1;   //操作できるか
-let visible = 1;    //見えるか
+//プレイヤー画像のスケーリングと読み込み
+user.onload = function() {
+    let orgWidth  = user.width;     // 元画像の横幅を保存
+    let orgHeight = user.height;    // 元画像の高さを保存
+    rHeight = orgHeight * (rWidth / orgWidth);  // rWidthに対して同じ比で高さも決定する。
+    user.style.position = "absolute";   //画面左上を(0,0)とした絶対位置でプレイヤーを配置するという状態
+};
+
+//プレイヤーの画像
+user.src = "image/hito.png";
 
 //マップ生成
 var map = new Map(wblock,hblock);
@@ -74,24 +69,24 @@ function onPaint ()
     if( !gTimer ) {
         gTimer = performance.now();
     }
-    //16.67ミリ秒たったら画面を更新することで、どんな環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
+    //16.67ミリ秒たったら画面を更新することで、60fpsよりフレームレートが高い環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
     if( gTimer + 16.67 < performance.now() ) {
         gTimer += 16.67;
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
-        if(operable) {
-            gx -= gKey[65] * gSpeed;    //g[65]=1（sキーが押し込まれた）
-            if (map.isInsideWall(gx,gy,map.bombermap)){gx += gKey[65] * gSpeed} //ダメならもどす
+        if(me.operable) {
+            me.gX -= gKey[65] * me.gS;    //g[65]=1（sキーが押し込まれた）
+            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
 
-            gx += gKey[68] * gSpeed;
-            if (map.isInsideWall(gx,gy,map.bombermap)){gx -= gKey[68] * gSpeed}
+            me.gX += gKey[68] * me.gS;
+            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
 
-            gy -= gKey[87] * gSpeed;
-            if (map.isInsideWall(gx,gy,map.bombermap)){gy += gKey[87] * gSpeed}
+            me.gY -= gKey[87] * me.gS;
+            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
 
-            gy += gKey[83] * gSpeed;
-            if (map.isInsideWall(gx,gy,map.bombermap)){gy -= gKey[83] * gSpeed}
+            me.gY += gKey[83] * me.gS;
+            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
         }
 
         draw();
@@ -122,11 +117,11 @@ function draw()
     }
 
     //プレイヤー描画
-    if(visible) {
+    if(me.visible) {
 
-        user.style.left = gx;
-        user.style.top = gy;
-        g.drawImage(user, gx, gy, rWidth, rHeight);
+        user.style.left = me.gX;
+        user.style.top = me.gY;
+        g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
     }
     
 }
