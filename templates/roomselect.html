@@ -2,64 +2,42 @@
 <html lang="ja">
 
 <head>
-    <title>ルーム作成/選択|AITボンバー</title>
+    <title>ルーム選択|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href=".css">
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script defer src="roomselect.js"></script>
 </head>
 
 <body>
     <main>
-        <!-- ルーム作成と選択を仮で同じページにしているが、実装は別ページでも可
-         タイトル画面からどちらを選んだかの情報を取得してdivの表示非表示で分岐させるか、ボタンで別ページへのリンクを貼る方式が考えられる -->
-
-        <!-- ルーム作成 -->
-        <div class="makeroom">
-            <h1>ルーム作成</h1>
-            <form action="roomwait.html" method="post">
-                <h2>プレイヤー名</h2>
-                <input type="text" name="playername" placeholder="プレイヤー名" required>
-                <!-- ルームの情報は実装不可または不要なら削除してね -->
-                <h2>ルーム情報</h2>
-                <input type="text" name="roomname" placeholder="ルーム名" required>
-
-                <input type="radio" name="rule" placeholder="" required>
-                <label for="rule">デスマッチ</label>
-                <input type="radio" name="rule" placeholder="" required>
-                <label for="rule">サバイバル</label>
-                <input type="radio" name="rule" placeholder="" required>
-                <label for="rule">ボンバーマン</label>
-
-                <input type="submit" value="作成">
-            </form>
-        </div>
+        <h1>AITボンバー</h1> <!-- ボタンで分岐させるようにしました -->
 
         <!-- ルーム選択 -->
-        <!-- ルームの選択はフォームで実装するか、ボタンでリンクを貼るか好きな方を決めて
-          一応仮で両方配置している -->
+        <!-- ルームの選択はフォームで実装するか、ボタンでリンクを貼るか好きな方を決めて一応仮で両方配置している -->
         <div class="selectroom">
-            <h1>ルーム選択</h1>
-            <form action="roomwait.html" method="post">
-                <h2>プレイヤー名</h2>
-                <input type="text" name="playername" placeholder="プレイヤー名" required>
-
-                <!-- formで実装する場合-->
+            <section id="join-room-section">
                 <h2>ルーム選択</h2>
-                <select name="roomid" required>
-                    <option value="123456">---のルーム(ルームID:123456)</option>
-                    <option value="123457">---のルーム(ルームID:123457)</option>
-                    <option value="123458">---のルーム(ルームID:123458)</option>
-                </select>
-                <input type="submit" value="選択">
-            </form>
-
-            <!-- ボタンでリンクを貼る場合 -->
-            <ul>
-                <li><a href="roomwait.html">---のルーム(ルームID:123456)</a></li>
-                <li><a href="roomwait.html">---のルーム(ルームID:123457)</a></li>
-                <li><a href="roomwait.html">---のルーム(ルームID:123458)</a></li>
-            </ul>
+                <form action="{{ url_for('roomwait') }}" method="post">
+                    <label>
+                        プレイヤー名:
+                        <input type="text" name="playername" placeholder="プレイヤー名" required>
+                    </label>
+                    <label>
+                        ルーム選択:
+                        <select name="roomid" required>
+                            {% for room_id, room_data in rooms.items() %}
+                            <option value="{{ room_id }}">{{ room_data['name'] }} (ID: {{ room_id }})</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <button type="submit">参加</button>
+                </form>
+            </section>
         </div>
-
+        <ul>
+            <li><a href="{{ url_for('index') }}">戻る</a></li>
+        </ul>
     </main>
 </body>
 

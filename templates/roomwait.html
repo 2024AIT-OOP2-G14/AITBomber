@@ -4,30 +4,34 @@
 <head>
     <title>プレイヤー待機中|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href=".css">
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script defer src="/static/roomwait.js"></script> <!-- 通信監視用 -->
 </head>
 
 <body>
     <main>
-        <h1>プレイヤー待機中</h1>
-
-        <!-- ルームの情報は実装不可なら削除してね -->
-        <ul>
-            <li>ルームID:123456</li>
-            <li>ルーム名:テストルーム</li>
-            <li>ルール:デスマッチ</li>
-        </ul>
-
-        <h2>参加者</h2>
-        <ul>
-            <li>ホスト:</li>
-            <li>プレイヤー1:参加中......</li>
-            <li>プレイヤー2:参加中......</li>
-            <li>プレイヤー3:参加中......</li>
-        </ul>
-        <!--ホストがゲーム開始できるようにするなら実装して-->
         <form action="game.html" method="post">
-            <input type="submit" value="PLAY">
+            <!-- ルームの情報は実装不可なら削除してね -->
+            <!-- 実装しようかな -->
+            <h1>プレイヤー待機中</h1>
+            <section id="room-info">
+                <p>ルームID: <strong>{{ room_id }}</strong></p>
+                <p>ルーム名: {{ room['name'] }}</p>
+                <p>ホスト: {{ room['host'] }}</p>
+                <p>ルール: {{ room['rule'] }}</p>
+            </section>
+
+            <h2>参加者</h2>
+            <section id="player-list">
+                {% for player in room['players'] %}
+                <li>{{ player }}</li>
+                {% endfor %}
+            </section>
+            {% if playername == room['host'] %}
+             <!--ホストのみPLAYが押せます-->
+            <button id="start-game-btn" type="submit">PLAY</button>
+            {% endif %}
         </form>
     </main>
 </body>
