@@ -1,4 +1,4 @@
-const Map=class{
+class Map{
     //フィールドとしてもっておく
     bombermap = [
         [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
