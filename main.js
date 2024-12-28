@@ -144,14 +144,22 @@ function draw()
     }
 
     //爆発の描画
-    for(var i=0; i<me.bLimit;i++) {
+    for(var i=0; i<me.bLimit; i++) {
         if(me.blastYX[i].length != 0) {
             g.drawImage(blast, me.blastYX[i][1]*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+            //死亡判定
+            if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+                me.operable = 0;
+            }
             //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく（）
             //上
             for(var r=1; r<=me.bRange; r++) {
                 if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 0) {
                     g.drawImage(blast, (me.blastYX[i][1]-r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+                    //死亡判定
+                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]-r) {
+                        me.operable = 0;
+                    }
                 }else {
                     break;
                 }
@@ -160,6 +168,10 @@ function draw()
                 //下
                 if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 0) {
                     g.drawImage(blast, (me.blastYX[i][1]+r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+                    //死亡判定
+                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]+r) {
+                        me.operable = 0;
+                    }
                 }else {
                     break;
                 }
@@ -168,6 +180,10 @@ function draw()
                 //左
                 if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 0) {
                     g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]-r)*squareSize, squareSize, squareSize)
+                    //死亡判定
+                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0]-r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+                        me.operable = 0;
+                    }
                 }else {
                     break;
                 }
@@ -176,6 +192,10 @@ function draw()
                 //右
                 if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 0) {
                     g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]+r)*squareSize, squareSize, squareSize)
+                    //死亡判定
+                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0]+r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+                        me.operable = 0;
+                    }
                 }else {
                     break;
                 }
@@ -184,7 +204,7 @@ function draw()
     }
 
     //プレイヤー描画
-    if(me.visible) {
+    if(me.operable) {
         user.style.left = me.gX;
         user.style.top = me.gY;
         g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
