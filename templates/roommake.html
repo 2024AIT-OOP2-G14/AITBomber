@@ -5,8 +5,6 @@
     <title>ルーム作成|AITボンバー</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../static/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-    <script defer src="/static/roommake.js"></script>
 </head>
 
 <body>
@@ -37,7 +35,7 @@
                         <label><input type="radio" name="rule" value="サバイバル" required> サバイバル</label>
                         <label><input type="radio" name="rule" value="ボンバーマン" required> ボンバーマン</label>
                     </fieldset>
-                    <button type="submit">作成</button>
+                    <button id="joinRoomButton" type="submit">作成</button>
                 </form>
             </section>
         </div>

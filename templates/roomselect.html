@@ -5,8 +5,6 @@
     <title>ルーム選択|AITボンバー</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../static/style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-    <script defer src="roomselect.js"></script>
 </head>
 
 <body>
@@ -16,22 +14,22 @@
         <!-- ルーム選択 -->
         <!-- ルームの選択はフォームで実装するか、ボタンでリンクを貼るか好きな方を決めて一応仮で両方配置している -->
         <div class="selectroom">
-            <section id="join-room-section">
+            <section>
                 <h2>ルーム選択</h2>
-                <form action="{{ url_for('roomwait') }}" method="post">
+                <form action="{{ url_for('roomselect') }}" method="post">
                     <label>
                         プレイヤー名:
                         <input type="text" name="playername" placeholder="プレイヤー名" required>
                     </label>
                     <label>
                         ルーム選択:
-                        <select name="roomid" required>
+                        <select name="room_id" required>
                             {% for room_id, room_data in rooms.items() %}
                             <option value="{{ room_id }}">{{ room_data['name'] }} (ID: {{ room_id }})</option>
                             {% endfor %}
                         </select>
                     </label>
-                    <button type="submit">参加</button>
+                    <button type="submit" >参加</button>
                 </form>
             </section>
         </div>
