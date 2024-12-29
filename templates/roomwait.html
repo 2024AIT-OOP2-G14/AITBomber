@@ -6,16 +6,15 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="../static/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-    <script defer src="/static/roomwait.js"></script> <!-- 通信監視用 -->
+    <script defer src="../static/game.js"></script>
 </head>
 
 <body>
     <main>
-        <form action="game.html" method="post">
             <!-- ルームの情報は実装不可なら削除してね -->
             <!-- 実装しようかな -->
             <h1>プレイヤー待機中</h1>
-            <section id="room-info">
+            <section>
                 <p>ルームID: <strong>{{ room_id }}</strong></p>
                 <p>ルーム名: {{ room['name'] }}</p>
                 <p>ホスト: {{ room['host'] }}</p>
@@ -23,16 +22,15 @@
             </section>
 
             <h2>参加者</h2>
-            <section id="player-list">
+            <section id="update_room">
                 {% for player in room['players'] %}
                 <li>{{ player }}</li>
                 {% endfor %}
-            </section>
+            </section>          
             {% if playername == room['host'] %}
-             <!--ホストのみPLAYが押せます-->
-            <button id="start-game-btn" type="submit">PLAY</button>
+             <button id="startGameButton">PLAY</button>
             {% endif %}
-        </form>
+            <a href="{{ url_for('game') }}">PLAY(開発用)</a>
     </main>
 </body>
 
