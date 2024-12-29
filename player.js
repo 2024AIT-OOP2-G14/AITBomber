@@ -12,7 +12,7 @@ class Player{
     bLimit = 3; //爆弾を置ける最大数
     bCount = 0; //爆弾を置いている数
 
-    bRange = 4; //爆風の長さ
+    bRange = 2; //爆風の長さ
 
     bYX = [[],[],[],[],[],[],[],[],[],[]];  //爆弾一つ一つの座標を記録（最大10）
     bTime = [0,0,0,0,0,0,0,0,0,0];    //爆弾一つ一つの時間を管理する
@@ -20,6 +20,7 @@ class Player{
 
     blastYX = [[],[],[],[],[],[],[],[],[],[]];  //爆風一つ一つの座標を記録
     blastTime = [0,0,0,0,0,0,0,0,0,0];
+    blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
     constructor(gn,gx,gy){
         this.gN = gn;
@@ -43,7 +44,7 @@ class Player{
     }
 
     //爆弾・爆風のタイマー管理
-    bTimer() {
+    bTimer(m) {
         //置いている爆弾を探索し、その爆弾のタイマーを一律で減らしていく
         for(var i=0; i<this.bLimit;i++) {
             //爆弾が存在するならその爆弾のタイマーを減らす
@@ -60,6 +61,9 @@ class Player{
                     this.bYX[i] = [];
                     this.blastYX[i] = [y,x];
                     this.blastTime[i] = this.blastLimiter;
+
+                    //この段階で実際の爆風の距離を確定させる
+                    this.explotionRange(i,m)
                 }
             }
         }    
@@ -72,6 +76,7 @@ class Player{
                 if(this.blastTime[i] < 0) {
                     this.blastTime[i] = 0
                     this.blastYX[i] = [];
+                    this.blastRange[i] = [0,0,0,0];
                 }
             }
         }    
@@ -85,6 +90,38 @@ class Player{
             }    
         }
         return false
+    }
+
+    //実際の爆風の距離を計算
+    explotionRange (i, m){
+        //左
+        for(var r=1; r<=this.bRange; r++) {
+            this.blastRange[i][0] ++
+            if(m[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0) {
+                break
+            }
+        }
+        //右
+        for(var r=1; r<=this.bRange; r++) {
+            this.blastRange[i][1] ++
+            if(m[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0) {
+                break
+            }
+        }
+        //上
+        for(var r=1; r<=this.bRange; r++) {
+            this.blastRange[i][2] ++
+            if(m[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0) {
+                break
+            }
+        }
+        //下
+        for(var r=1; r<=this.bRange; r++) {
+            this.blastRange[i][3] ++
+            if(m[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
+                break
+            }
+        }
     }
 
 }

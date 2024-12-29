@@ -106,7 +106,6 @@ function onPaint ()
             if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
             
             //スペースキーが押し込まれたらボムを置く
-            console.log(spaceTime)
             if(spaceTime>0){
                 spaceTime--;
             }
@@ -118,7 +117,7 @@ function onPaint ()
         }
         
         //タイマー進める
-        me.bTimer();
+        me.bTimer(map.bombermap);
 
         draw();
     }
@@ -159,9 +158,10 @@ function draw()
             if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
                 me.operable = 0;
             }
-            //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく（）
-            //上
-            for(var r=1; r<=me.bRange; r++) {
+            
+            //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく
+            //左
+            for(var r=1; r<=me.blastRange[i][0]; r++) {
                 if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 0) {
                     g.drawImage(blast, (me.blastYX[i][1]-r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
                     //死亡判定
@@ -175,8 +175,8 @@ function draw()
                     break
                 }
             }
-            for(var r=1; r<=me.bRange; r++) {
-                //下
+            //右
+            for(var r=1; r<=me.blastRange[i][1]; r++) {
                 if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 0) {
                     g.drawImage(blast, (me.blastYX[i][1]+r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
                     //死亡判定
@@ -190,8 +190,8 @@ function draw()
                     break
                 }
             }
-            for(var r=1; r<=me.bRange; r++) {
-                //左
+            //上
+            for(var r=1; r<=me.blastRange[i][2]; r++) {
                 if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 0) {
                     g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]-r)*squareSize, squareSize, squareSize)
                     //死亡判定
@@ -205,8 +205,8 @@ function draw()
                     break
                 }
             }
-            for(var r=1; r<=me.bRange; r++) {
-                //右
+            //下
+            for(var r=1; r<=me.blastRange[i][3]; r++) {
                 if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 0) {
                     g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]+r)*squareSize, squareSize, squareSize)
                     //死亡判定
