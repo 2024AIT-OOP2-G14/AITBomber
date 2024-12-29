@@ -22,6 +22,8 @@ let spaceTime = 0;
 const user = document.createElement('img');
 //壁情報
 const kabe = document.createElement('img');
+//壊れる壁情報
+const breakabe = document.createElement('img');
 //爆弾情報
 const bomb = document.createElement('img');
 //爆風情報
@@ -63,6 +65,9 @@ user.src = "image/hito.png";
 //壁画像
 kabe.src = "image/kabe.png";
 
+//壊れる壁画像
+breakabe.src = "image/breakabe.png";
+
 //爆弾画像
 bomb.src = "image/bomb.png";
 
@@ -71,6 +76,7 @@ blast.src = "image/blast.png";
 
 //マップ生成
 var map = new Map(wblock,hblock);
+map.GenerateBreakWall();
 
 function onPaint ()
 {
@@ -137,6 +143,8 @@ function draw()
         for(var j=0; j<wblock; j++){
             if(map.bombermap[i][j]==1){
                 g.drawImage(kabe, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==2){
+                g.drawImage(breakabe, j*squareSize, i*squareSize, squareSize, squareSize)
             }else if(me.existBomb(i,j)){
                 g.drawImage(bomb, j*squareSize, i*squareSize, squareSize, squareSize)
             }
@@ -160,8 +168,11 @@ function draw()
                     if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]-r) {
                         me.operable = 0;
                     }
-                }else {
-                    break;
+                    //壊れる壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 2){
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r]=0
+                }else{
+                    break
                 }
             }
             for(var r=1; r<=me.bRange; r++) {
@@ -169,11 +180,14 @@ function draw()
                 if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 0) {
                     g.drawImage(blast, (me.blastYX[i][1]+r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
                     //死亡判定
-                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]+r) {
+                    if(Math.round(me.gYd/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]+r) {
                         me.operable = 0;
                     }
-                }else {
-                    break;
+                    //壊れる壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 2){
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r]=0
+                }else{
+                    break
                 }
             }
             for(var r=1; r<=me.bRange; r++) {
@@ -184,8 +198,11 @@ function draw()
                     if(Math.round(me.gY/squareSize) == me.blastYX[i][0]-r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
                         me.operable = 0;
                     }
-                }else {
-                    break;
+                    //壊れる壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 2) {
+                    map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] = 0
+                }else{
+                    break
                 }
             }
             for(var r=1; r<=me.bRange; r++) {
@@ -196,8 +213,11 @@ function draw()
                     if(Math.round(me.gY/squareSize) == me.blastYX[i][0]+r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
                         me.operable = 0;
                     }
-                }else {
-                    break;
+                    //壊れる壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 2) {
+                    map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] = 0
+                }else{
+                    break
                 }
             }
         }
