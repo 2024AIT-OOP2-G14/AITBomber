@@ -60,19 +60,19 @@ user.onload = function() {
 };
 
 //プレイヤーの画像
-user.src = "image/hito.png";
+user.src = "../static/image/hito.png";
 
 //壁画像
-kabe.src = "image/kabe.png";
+kabe.src = "../static/image/kabe.png";
 
 //壊れる壁画像
-breakabe.src = "image/breakabe.png";
+breakabe.src = "../static/image/breakabe.png";
 
 //爆弾画像
-bomb.src = "image/bomb.png";
+bomb.src = "../static/image/bomb.png";
 
 //爆風画像
-blast.src = "image/blast.png";
+blast.src = "../static/image/blast.png";
 
 //マップ生成
 var map = new Map(wblock,hblock);
@@ -88,36 +88,38 @@ function onPaint ()
     }
     //16.67ミリ秒たったら画面を更新することで、60fpsよりフレームレートが高い環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
     if( gTimer + 16.67 < performance.now() ) {
-        gTimer += 16.67;
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
-        if(me.operable) {
-            me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+        //60fpsよりフレームレートが低い環境では、時間関連のイベントが複数回行われるようにします。（60fpsで動かす想定なので、30fpsの環境では移動処理が二度行われます。）
+        while( gTimer + 16.67 < performance.now() ){
+            gTimer += 16.67;
+            if(me.operable) {
+                me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
 
-            me.gX += gKey[68] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
+                me.gX += gKey[68] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
 
-            me.gY -= gKey[87] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+                me.gY -= gKey[87] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
 
-            me.gY += gKey[83] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
-            
-            //スペースキーが押し込まれたらボムを置く
-            if(spaceTime>0){
-                spaceTime--;
+                me.gY += gKey[83] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
             }
-
-            if(gKey[32]==1 && spaceTime==0) {
-                me.setBomb();
-                spaceTime = spaceKeyRecharge;
-            }
+            //タイマー進める
+            me.bTimer(map.bombermap); 
         }
-        
-        //タイマー進める
-        me.bTimer(map.bombermap);
+            
+        //スペースキーが押し込まれたらボムを置く
+        if(spaceTime>0){
+            spaceTime--;
+        }
+
+        if(me.operable && gKey[32]==1 && spaceTime==0) {
+            me.setBomb();
+            spaceTime = spaceKeyRecharge;
+        }
 
         draw();
     }
