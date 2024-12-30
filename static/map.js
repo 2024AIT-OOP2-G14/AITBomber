@@ -43,7 +43,7 @@ class Map{
     }
 
     //(x,y)の座標が壁の中にあるか判定（boolean）
-    isInsideWall(x,y) {
+    isInsideWall(x,y,nowisIW) {
         let isIW = false
         //壁全探索
         for(var i=0; i<hblock; i++){
@@ -51,7 +51,10 @@ class Map{
                 if(this.bombermap[i][j]>=1){
                     //ある一つの壁の内側に、与えられた(x,y)が入っているか(0.9ではなく1にしてしまうと1pxの誤差で道に入れないので、ゆとりを持たせるために0.9にしている。)
                     if((j-0.9)*(squareSize) < x && x < (j+0.9)*squareSize && (i-0.9)*squareSize < y && y < (i+0.9)*squareSize) {
-                        isIW = true
+                        //今埋まっているかつ次いる埋まっている場所が爆弾ならば壁がない判定にする
+                        if(!(nowisIW&&(this.bombermap[i][j]==3))){
+                            isIW = true
+                        }                        
                     }
                 }
             }

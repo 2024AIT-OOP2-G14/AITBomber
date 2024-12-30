@@ -22,6 +22,9 @@ class Player{
     blastTime = [0,0,0,0,0,0,0,0,0,0];
     blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
+    //マップ読み込み
+    map = new Map();
+
     constructor(gn,gx,gy){
         this.gN = gn;
         this.gX = gx;
@@ -34,7 +37,9 @@ class Player{
             this.bYX[this.nextBombID] = [Math.round(this.gY/squareSize),Math.round(this.gX/squareSize)];
             this.bTime[this.nextBombID] = this.bombLimiter;
             this.bCount ++;
-
+            //ボムが置かれた座標の値を３にする
+            map.bombermap[this.bYX[this.nextBombID][0]][this.bYX[this.nextBombID][1]]=3
+            gTimer += 16.67;
             if(this.nextBombID+1 == this.bLimit) {
                 this.nextBombID = 0;
             }else{
@@ -57,6 +62,8 @@ class Player{
 
                     let y = this.bYX[i][0]
                     let x = this.bYX[i][1]
+                    //タイマーが0を回ったら当たり判定を消す
+                    map.bombermap[y][x]=0
 
                     this.bYX[i] = [];
                     this.blastYX[i] = [y,x];
