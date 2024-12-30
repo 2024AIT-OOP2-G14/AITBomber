@@ -32,6 +32,9 @@ const blast = document.createElement('img');
 //プレイヤー番号
 let myN = 0;
 
+//埋まっているかのフラッグ
+let nowisIW=false
+
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 switch (myN) {
     case 0:
@@ -93,17 +96,23 @@ function onPaint ()
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
         if(me.operable) {
+            //今埋まっているか調べる
+            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){
+                nowisIW=true
+            }
             me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
 
             me.gX += gKey[68] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
+            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX -= gKey[68] * me.gS}
 
             me.gY -= gKey[87] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY += gKey[87] * me.gS}
 
             me.gY += gKey[83] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
+            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY -= gKey[83] * me.gS}
+            //値を戻す
+            nowisIW=false
             
             //スペースキーが押し込まれたらボムを置く
             if(spaceTime>0){
