@@ -88,23 +88,29 @@ function onPaint ()
     }
     //16.67ミリ秒たったら画面を更新することで、60fpsよりフレームレートが高い環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
     if( gTimer + 16.67 < performance.now() ) {
-        gTimer += 16.67;
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
         if(me.operable) {
-            me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+            //60fpsよりフレームレートが低い環境では、時間関連のイベントが複数回行われるようにします。（60fpsで動かす想定なので、30fpsの環境では移動処理が二度行われます。）
+            while( gTimer + 16.67 < performance.now() ){
+                gTimer += 16.67;
 
-            me.gX += gKey[68] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
+                me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
 
-            me.gY -= gKey[87] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+                me.gX += gKey[68] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
 
-            me.gY += gKey[83] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
-            
+                me.gY -= gKey[87] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+
+                me.gY += gKey[83] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
+                
+                //タイマー進める
+                me.bTimer(map.bombermap);
+            }
             //スペースキーが押し込まれたらボムを置く
             if(spaceTime>0){
                 spaceTime--;
@@ -115,9 +121,6 @@ function onPaint ()
                 spaceTime = spaceKeyRecharge;
             }
         }
-        
-        //タイマー進める
-        me.bTimer(map.bombermap);
 
         draw();
     }
