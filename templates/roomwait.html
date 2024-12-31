@@ -30,7 +30,7 @@
             {% if playername == room['host'] %}
              <button id="startGameButton">PLAY</button>
             {% endif %}
-            <a href="{{ url_for('game') }}">PLAY(開発用)</a>
+            <a id="startGameButton" href="{{ url_for('game') }}">PLAY(開発用)</a>
     </main>
 </body>
 

@@ -82,11 +82,15 @@ def roomwait():
     # プレイヤー追加（重複しない場合のみ）
     if playername not in rooms[room_id]['players']:
         rooms[room_id]['players'].append(playername)
+    
+    # プレイヤーの数を四人に制限(タスク：警告文を出したい)
+    if len(rooms[room_id]['players']) > 4:
+        return redirect(url_for('roomselect'))
 
     #logging.info(f"ルーム更新: {rooms[room_id]}")
     return render_template('roomwait.html', room_id=room_id, playername=playername, room=rooms[room_id])
 
-@socketio.on('join_room')#Socket.IO のルームにクライアントを参加させる処理を追加する。
+@socketio.on('join_room')
 def handle_join_room(data):
     room_id = data.get('room_id')
     playername = data.get('playername')
@@ -94,12 +98,16 @@ def handle_join_room(data):
     if not room_id or room_id not in rooms:
         emit('error', {'message': '不正なルームIDです'})
         return
-    
-    join_room(room_id)
-    #logging.info(f"{playername} がルーム {room_id} に参加しました!")
 
-    # クライアントにルーム情報を送信
+    # プレイヤーが既にリストに含まれていない場合のみ追加
+    if playername not in rooms[room_id]['players']:
+        rooms[room_id]['players'].append(playername)
+    
+    # プレイヤーをルームに追加
+    join_room(room_id)
+    # ルーム全員にルーム情報を送信
     emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id)
+
 
 @socketio.on('start_game')
 def handle_start_game(data):
@@ -114,7 +122,15 @@ def handle_start_game(data):
         emit('error', {'message': 'ゲームを開始できるのはホストのみです'})
         return
 
-    emit('game_started', {'message': 'ゲームが開始されました', 'room_id': room_id}, room=room_id)
+    # ログにゲーム開始を記録
+    logging.warning(f"ルーム {room_id} で {playername} によりゲームが開始されました")
+
+    # 全員にゲーム開始通知(プレーヤーネームはホストの名前で上書きされるため送らない)
+    emit('game_started', {
+        'message': 'ゲームが開始されました',
+        'room_id': room_id
+    }, room=room_id)
+
 
 
 @socketio.on('disconnect')
@@ -127,9 +143,13 @@ def handle_disconnect():
                 del rooms[room_id]
             break
 
-@app.route('/game.html')#ゲーム画面に遷移
+@app.route('/game.html', methods=['GET', 'POST'])#ゲーム画面に遷移
 def game():
-    return render_template('game.html')
+    if request.method == 'POST':
+        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
+    else:  # GETリクエストの場合（クエリパラメータから取得）
+        room_id = request.args.get('room_id')
+    return render_template('game.html', room_id=room_id)
 
 
 if __name__ == '__main__':
