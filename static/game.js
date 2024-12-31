@@ -17,20 +17,10 @@ function joinRoom(roomId, playerName) {
     socket.emit('join_room', { room_id: roomId, playername: playerName });
 }
 
-document.getElementById('startGameButton').addEventListener('click', () => {
-    const params = new URLSearchParams(window.location.search);//クリエパラメータから取得している
-    const roomId = params.get('room_id'); // room_idを取得
-    const playerName = params.get('playername'); // playernameを取得
-    console.log("room_id:", params.get('room_id'));
-    console.log("playername:", params.get('playername'));
-    startGame(roomId, playerName);
-});
-
 // リアルタイムでルーム情報を更新
 socket.on('update_room', (room) => {
     // `<section id="update_room">` を取得
     const updateRoomSection = document.getElementById('update_room');
-
     // room オブジェクトが正しく受信されたか確認
     if (room && Array.isArray(room.players)) {
         // プレイヤーリストを生成
@@ -44,6 +34,16 @@ socket.on('update_room', (room) => {
     }
 });
 
+
+document.getElementById('startGameButton').addEventListener('click', () => {
+    const params = new URLSearchParams(window.location.search);//クリエパラメータから取得している
+    const roomId = params.get('room_id'); // room_idを取得
+    const playerName = params.get('playername'); // playernameを取得
+    console.log("room_id:", params.get('room_id'));
+    console.log("playername:", params.get('playername'));
+    startGame(roomId, playerName);
+});
+
 // ゲーム開始
 function startGame(roomId, playerName) {
     socket.emit('start_game', { room_id: roomId, playername: playerName });
@@ -52,9 +52,13 @@ function startGame(roomId, playerName) {
 // ゲーム開始の通知
 socket.on('game_started', (data) => {
     console.log("ゲームが開始されました:", data); // dataの内容も確認できるようにする
-    alert(data.message);
-    // game.html に遷移
-    location.href = `game.html?room_id=${data.room_id}`;
+
+    // URLのクエリパラメータからplayernameを取得する
+    const params = new URLSearchParams(window.location.search);
+    const playerName = params.get('playername');  // 'playername' パラメータを取得
+
+    // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
+    location.href = `game.html?room_id=${data.room_id}&playername=${playerName}`;
 });
 
 
@@ -67,3 +71,6 @@ socket.on('connect', () => {
     console.log("ソケットがサーバーに接続されました！");
 });
 
+socket.on('disconnect', () => {
+    console.log("ソケット切断");
+});
