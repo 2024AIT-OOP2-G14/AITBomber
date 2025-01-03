@@ -91,42 +91,38 @@ function onPaint ()
     }
     //16.67ミリ秒たったら画面を更新することで、60fpsよりフレームレートが高い環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
     if( gTimer + 16.67 < performance.now() ) {
-        gTimer += 16.67;
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
-        if(me.operable) {
-            //今埋まっているか調べる
-            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){
-                nowisIW=true
+        //60fpsよりフレームレートが低い環境では、時間関連のイベントが複数回行われるようにします。（60fpsで動かす想定なので、30fpsの環境では移動処理が二度行われます。）
+        while( gTimer + 16.67 < performance.now() ){
+            gTimer += 16.67;
+            if(me.operable) {
+                me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+
+                me.gX += gKey[68] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
+
+                me.gY -= gKey[87] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+
+                me.gY += gKey[83] * me.gS;
+                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
             }
-            me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
-
-            me.gX += gKey[68] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX -= gKey[68] * me.gS}
-
-            me.gY -= gKey[87] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY += gKey[87] * me.gS}
-
-            me.gY += gKey[83] * me.gS;
-            if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY -= gKey[83] * me.gS}
-            //値を戻す
-            nowisIW=false
-            
-            //スペースキーが押し込まれたらボムを置く
-            if(spaceTime>0){
-                spaceTime--;
-            }
-
-            if(gKey[32]==1 && spaceTime==0) {
-                me.setBomb();
-                spaceTime = spaceKeyRecharge;
-            }
+            //タイマー進める
+            me.bTimer(map.bombermap); 
         }
-        
-        //タイマー進める
-        me.bTimer(map.bombermap);
+            
+        //スペースキーが押し込まれたらボムを置く
+        if(spaceTime>0){
+            spaceTime--;
+        }
+
+        if(me.operable && gKey[32]==1 && spaceTime==0) {
+            me.setBomb();
+            spaceTime = spaceKeyRecharge;
+        }
 
         draw();
     }
@@ -137,10 +133,6 @@ function onPaint ()
 function draw()
 {
     let g = document.getElementById("main").getContext("2d");
-
-    //大外の灰色壁描画
-    g.fillStyle = "#696969";
-    g.fillRect( 0, 0, WIDTH, HEIGHT);
 
     //緑色地面描画
     g.fillStyle = "#006400";
@@ -237,6 +229,9 @@ function draw()
         user.style.left = me.gX;
         user.style.top = me.gY;
         g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
+        g.fillStyle = "#ffffff";
+        g.textAlign = 'center';
+        g.fillText(me.name, me.gX+squareSize/2, me.gY);
     }
     
 }
