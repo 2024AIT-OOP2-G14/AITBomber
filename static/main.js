@@ -98,17 +98,23 @@ function onPaint ()
         while( gTimer + 16.67 < performance.now() ){
             gTimer += 16.67;
             if(me.operable) {
+                //今埋まっているか調べる
+                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){
+                    nowisIW=true
+                }
                 me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
 
                 me.gX += gKey[68] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gX -= gKey[68] * me.gS}
+                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX -= gKey[68] * me.gS}
 
                 me.gY -= gKey[87] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY += gKey[87] * me.gS}
+                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY += gKey[87] * me.gS}
 
                 me.gY += gKey[83] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,map.bombermap)){me.gY -= gKey[83] * me.gS}
+                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY -= gKey[83] * me.gS}
+                //値を戻す
+                nowisIW=false
             }
             //タイマー進める
             me.bTimer(map.bombermap); 
