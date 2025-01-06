@@ -1,0 +1,14 @@
+#maintitle{
+    position: absolute;
+    left: 25%;
+    font-size: 120px;
+}
+
+.select{
+    position: absolute;
+    top: 34%;
+    left: 38%;
+    font-size: 50px;
+    margin:0 auto;
+    line-height: 100px;
+}
