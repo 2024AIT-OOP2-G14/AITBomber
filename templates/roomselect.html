@@ -10,11 +10,9 @@
 </head>
 
 <body>
-    <main>
-        <h1>AITボンバー</h1> <!-- ボタンで分岐させるようにしました -->
+    <main> <!-- ボタンで分岐させるようにしました -->
 
         <!-- ルーム選択 -->
-        <!-- ルームの選択はフォームで実装するか、ボタンでリンクを貼るか好きな方を決めて一応仮で両方配置している -->
         <div class="selectroom">
             <section id="join-room-section">
                 <h2>ルーム選択</h2>
@@ -35,7 +33,7 @@
                 </form>
             </section>
         </div>
-        <ul>
+        <ul id="buckbtn">
             <li><a href="{{ url_for('index') }}">戻る</a></li>
         </ul>
     </main>

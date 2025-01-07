@@ -4,14 +4,14 @@
 <head>
     <title>ルーム作成|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="../static/roommake.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
     <script defer src="/static/roommake.js"></script>
 </head>
 
 <body>
     <main>
-        <h1>AITボンバー</h1>
+        <h1>ルーム作成</h1>
         {% if room_id %}
         <p>ルームID: <strong>{{ room_id }}</strong></p>
         {% else %}
@@ -20,7 +20,6 @@
         <!-- ルーム作成 -->
         <div class="makeroom">
             <section id="create-room-section">
-                <h2>ルーム作成</h2>
                 <form action="{{ url_for('roommake') }}" method="post">
                     <input type="hidden" name="roomid" value="{{ room_id }}">
                     <label>
@@ -41,7 +40,7 @@
                 </form>
             </section>
         </div>
-        <ul>
+        <ul id="buckbtn">
             <li><a href="{{ url_for('index') }}">戻る</a></li>
         </ul>
     </main>

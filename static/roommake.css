@@ -4,7 +4,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 80vh; /* ビューポートの高さを100%に設定 */
+    height: 100vh; /* ビューポートの高さを100%に設定 */
     font-size: 30px;
     background-color: #f4f4f4; /* 任意の背景色 */
 }
