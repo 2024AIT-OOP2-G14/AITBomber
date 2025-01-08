@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import uuid  # UUIDを生成するモジュール
 import sys
@@ -7,6 +7,7 @@ import logging
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "f4Pjp3UgJa51"  # セキュリティーのためにいるらしい
 
 # Socket.IOの初期化
 socketio = SocketIO(app, cors_allowed_origins="*")
@@ -18,8 +19,19 @@ rooms = {}  # ルームIDをキーとして保持
 def index():
     return render_template('index.html')
 
-@app.route('/roomselect')
+@app.route('/roomselect', methods=['GET', 'POST'])
 def roomselect():
+    if request.method == 'POST':
+        playername = request.form.get('playername')
+        room_id = request.form.get('room_id')
+        if not playername or not room_id:
+            logging.warning("入力エラー: 必要な情報が不足しています")
+            return redirect(url_for('roomselect'))
+        #logging.info(f"ルーム作成: {rooms[room_id]}")  # 確認用
+        #logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
+
+        # room_id と playername をクエリパラメータとして渡す
+        return redirect(url_for('roomwait', room_id=room_id, playername=playername))
     return render_template('roomselect.html', rooms=rooms)
 
 @app.route('/roommake', methods=['GET', 'POST'])
@@ -40,8 +52,8 @@ def roommake():
             'host': playername,
             'players': [playername],
         }
-        logging.info(f"ルーム作成: {rooms[room_id]}")  # 確認用
-        logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
+        #logging.info(f"ルーム作成: {rooms[room_id]}")  # 確認用
+        #logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
 
         # room_id と playername をクエリパラメータとして渡す
         return redirect(url_for('roomwait', room_id=room_id, playername=playername))
@@ -57,7 +69,6 @@ def roomwait():
         room_id = request.args.get('room_id')
         playername = request.args.get('playername')
 
-    logging.info(f"Received playername: {playername}, room_id: {room_id}")
 
     # バリデーション
     if not room_id or room_id not in rooms:
@@ -71,30 +82,56 @@ def roomwait():
     # プレイヤー追加（重複しない場合のみ）
     if playername not in rooms[room_id]['players']:
         rooms[room_id]['players'].append(playername)
+    
+    # プレイヤーの数を四人に制限(タスク：警告文を出したい)
+    if len(rooms[room_id]['players']) > 4:
+        return redirect(url_for('roomselect'))
 
-    logging.info(f"ルーム更新: {rooms[room_id]}")
+    #logging.info(f"ルーム更新: {rooms[room_id]}")
     return render_template('roomwait.html', room_id=room_id, playername=playername, room=rooms[room_id])
 
-
-
 @socketio.on('join_room')
-def handle_join(data):
+def handle_join_room(data):
     room_id = data.get('room_id')
     playername = data.get('playername')
+
     if not room_id or room_id not in rooms:
-        emit('error', {'message': 'ルームが存在しません'})
+        emit('error', {'message': '不正なルームIDです'})
         return
-    rooms[room_id]['players'].append(playername)
+
+    # プレイヤーが既にリストに含まれていない場合のみ追加
+    if playername not in rooms[room_id]['players']:
+        rooms[room_id]['players'].append(playername)
+    
+    # プレイヤーをルームに追加
     join_room(room_id)
-    emit('update_room', rooms[room_id], room=room_id)
+    # ルーム全員にルーム情報を送信
+    emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id)
+
 
 @socketio.on('start_game')
 def handle_start_game(data):
     room_id = data.get('room_id')
+    playername = data.get('playername')
+
     if not room_id or room_id not in rooms:
         emit('error', {'message': 'ルームが存在しません'})
         return
-    emit('game_started', {'message': 'ゲームが開始されました'}, room=room_id)
+
+    if rooms[room_id]['host'] != playername:
+        emit('error', {'message': 'ゲームを開始できるのはホストのみです'})
+        return
+
+    # ログにゲーム開始を記録
+    logging.warning(f"ルーム {room_id} で {playername} によりゲームが開始されました")
+
+    # 全員にゲーム開始通知(プレーヤーネームはホストの名前で上書きされるため送らない)
+    emit('game_started', {
+        'message': 'ゲームが開始されました',
+        'room_id': room_id
+    }, room=room_id)
+
+
 
 @socketio.on('disconnect')
 def handle_disconnect():
@@ -105,6 +142,15 @@ def handle_disconnect():
             if not room_data['players']:
                 del rooms[room_id]
             break
+
+@app.route('/game.html', methods=['GET', 'POST'])#ゲーム画面に遷移
+def game():
+    if request.method == 'POST':
+        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
+    else:  # GETリクエストの場合（クエリパラメータから取得）
+        room_id = request.args.get('room_id')
+    return render_template('game.html', room_id=room_id)
+
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port=8080, debug=True)
