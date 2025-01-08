@@ -4,26 +4,16 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 50vh; /* ビューポートの高さを100%に設定 */
-    font-size: 50px;
+    height: 80vh; /* ビューポートの高さを100%に設定 */
+    font-size: 30px;
     background-color: #f4f4f4; /* 任意の背景色 */
 }
 
-#center {
-    text-align: center; /* 中央揃え */
-}
-
-.select {
+#buckbtn{
     list-style: none; /* デフォルトのリストスタイルを削除 */
-    padding: 0;
-    margin: 0;
 }
 
-.select li {
-    margin: 10px 0; /* リストアイテム間の余白 */
-}
-
-.select li a {
+#buckbtn li a{
     text-decoration: none; /* 下線を削除 */
     color: #333; /* 任意のテキストカラー */
     font-size: 30px; /* 任意のフォントサイズ */
@@ -34,7 +24,7 @@ body {
     transition: 0.3s; /* ホバー時のエフェクト */
 }
 
-.select li a:hover {
+#buckbtn li a:hover {
     background-color: #333; /* 背景色の変更 */
     color: #fff; /* テキストカラーの変更 */
     border-color: #fff; /* ボーダーカラーの変更 */

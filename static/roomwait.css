@@ -1,0 +1,20 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* ビューポートの高さを100%に設定 */
+    font-size: 30px;
+    background-color: #f4f4f4; /* 任意の背景色 */
+}
+
+#title{
+    /* position: fixed; */
+    margin-left: -80%;
+}
+
+#start-game-btn{
+    margin-left: 150%;
+    font-size: 40px;
+}
