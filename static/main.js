@@ -1,17 +1,19 @@
+// main.js（他のファイル）
+console.log(socket);  // window.socketとしてグローバルにアクセスできる
 "use strict";
 
-let gKey = new Uint8Array( 0x100 );
+let gKey = new Uint8Array(0x100);
 let gTimer;
 
 //1マスの大きさ(縦横共通)
 const squareSize = 16 * 2
 
 //縦横ブロック数
-const wblock=15;
-const hblock=13;
+const wblock = 15;
+const hblock = 13;
 
 //画面サイズ
-const WIDTH = squareSize * wblock;  
+const WIDTH = squareSize * wblock;
 const HEIGHT = squareSize * hblock;
 
 //スペースキーのクールタイム(frame)
@@ -32,21 +34,21 @@ const blast = document.createElement('img');
 // htmlからmyNを取得
 console.log(`ルームに参加します: myN=${myN}`);
 //埋まっているかのフラッグ
-let nowisIW=false
+let nowisIW = false
 
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 switch (myN) {
     case 0:
-        var me = new Player(myN,squareSize,squareSize);
+        var me = new Player(myN, squareSize, squareSize);
         break;
     case 1:
-        var me = new Player(myN,WIDTH-2*squareSize,squareSize);
+        var me = new Player(myN, WIDTH - 2 * squareSize, squareSize);
         break;
     case 2:
-        var me = new Player(myN,squareSize,HEIGHT-2*squareSize);
+        var me = new Player(myN, squareSize, HEIGHT - 2 * squareSize);
         break;
     case 3:
-        var me = new Player(myN,WIDTH-2*squareSize,HEIGHT-2*squareSize);
+        var me = new Player(myN, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize);
         break;
 }
 
@@ -54,8 +56,8 @@ let rWidth = squareSize;         // 任意の数を入れることで、プレ�
 let rHeight;
 
 //プレイヤー画像のスケーリングと読み込み
-user.onload = function() {
-    let orgWidth  = user.width;     // 元画像の横幅を保存
+user.onload = function () {
+    let orgWidth = user.width;     // 元画像の横幅を保存
     let orgHeight = user.height;    // 元画像の高さを保存
     rHeight = orgHeight * (rWidth / orgWidth);  // rWidthに対して同じ比で高さも決定する。
     user.style.position = "absolute";   //画面左上を(0,0)とした絶対位置でプレイヤーを配置するという状態
@@ -77,19 +79,19 @@ bomb.src = "../static/image/bomb.png";
 blast.src = "../static/image/blast.png";
 
 //マップ生成
-var map = new Map(wblock,hblock);
+var map = new Map(wblock, hblock);
 map.GenerateBreakWall();
 
-function onPaint ()
-{
+function onPaint() {
     //frameParSecond管理（60fps）
 
     //初回は実時間をgTimerに送る
-    if( !gTimer ) {
+    if (!gTimer) {
         gTimer = performance.now();
     }
     //16.67ミリ秒たったら画面を更新することで、60fpsよりフレームレートが高い環境でも約60fpsで動く(16.67ms/f = 1/1.667f/s = 59.9988002f/s ≒ 60f/s)
-    if( gTimer + 16.67 < performance.now() ) {
+    if (gTimer + 16.67 < performance.now()) {
+
 
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
@@ -131,106 +133,129 @@ function onPaint ()
 
         draw();
     }
-    requestAnimationFrame( onPaint );
+    requestAnimationFrame(onPaint);
 }
 
 //描画
-function draw()
-{
+function draw() {
     let g = document.getElementById("main").getContext("2d");
 
     //緑色地面描画
     g.fillStyle = "#006400";
-    g.fillRect( squareSize, squareSize, WIDTH-2*squareSize, HEIGHT-2*squareSize);
+    g.fillRect(squareSize, squareSize, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize);
 
     //壁or爆弾の描画
-    for(var i=0; i<hblock; i++){
-        for(var j=0; j<wblock; j++){
-            if(map.bombermap[i][j]==1){
-                g.drawImage(kabe, j*squareSize, i*squareSize, squareSize, squareSize)
-            }else if(map.bombermap[i][j]==2){
-                g.drawImage(breakabe, j*squareSize, i*squareSize, squareSize, squareSize)
-            }else if(me.existBomb(i,j)){
-                g.drawImage(bomb, j*squareSize, i*squareSize, squareSize, squareSize)
+    for (var i = 0; i < hblock; i++) {
+        for (var j = 0; j < wblock; j++) {
+            if (map.bombermap[i][j] == 1) {
+                g.drawImage(kabe, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 2) {
+                g.drawImage(breakabe, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (me.existBomb(i, j)) {
+                g.drawImage(bomb, j * squareSize, i * squareSize, squareSize, squareSize)
             }
         }
     }
 
     //爆発の描画
-    for(var i=0; i<me.bLimit; i++) {
-        if(me.blastYX[i].length != 0) {
-            g.drawImage(blast, me.blastYX[i][1]*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+    for (var i = 0; i < me.bLimit; i++) {
+        if (me.blastYX[i].length != 0) {
+            g.drawImage(blast, me.blastYX[i][1] * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
             //死亡判定
-            if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+            if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
                 me.operable = 0;
             }
-            
+
             //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく
             //左
-            for(var r=1; r<=me.blastRange[i][0]; r++) {
-                if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 0) {
-                    g.drawImage(blast, (me.blastYX[i][1]-r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+            for (var r = 1; r <= me.blastRange[i][0]; r++) {
+                if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] == 0) {
+                    g.drawImage(blast, (me.blastYX[i][1] - r) * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
                     //死亡判定
-                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]-r) {
+                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1] - r) {
                         me.operable = 0;
                     }
                     //壊れる壁なら消す
-                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 2){
-                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r]=0
-                }else{
+                } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] == 2) {
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] = 0
+                } else {
                     break
                 }
             }
             //右
-            for(var r=1; r<=me.blastRange[i][1]; r++) {
-                if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 0) {
-                    g.drawImage(blast, (me.blastYX[i][1]+r)*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
+            for (var r = 1; r <= me.blastRange[i][1]; r++) {
+                if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] == 0) {
+                    g.drawImage(blast, (me.blastYX[i][1] + r) * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
                     //死亡判定
-                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0] && Math.round(me.gX/squareSize) == me.blastYX[i][1]+r) {
+                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1] + r) {
                         me.operable = 0;
                     }
                     //壊れる壁なら消す
-                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 2){
-                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r]=0
-                }else{
+                } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] == 2) {
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] = 0
+                } else {
                     break
                 }
             }
             //上
-            for(var r=1; r<=me.blastRange[i][2]; r++) {
-                if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 0) {
-                    g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]-r)*squareSize, squareSize, squareSize)
+            for (var r = 1; r <= me.blastRange[i][2]; r++) {
+                if (map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] == 0) {
+                    g.drawImage(blast, me.blastYX[i][1] * squareSize, (me.blastYX[i][0] - r) * squareSize, squareSize, squareSize)
                     //死亡判定
-                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0]-r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] - r && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
                         me.operable = 0;
                     }
                     //壊れる壁なら消す
-                }else if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 2) {
-                    map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] = 0
-                }else{
+                } else if (map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] == 2) {
+                    map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] = 0
+                } else {
                     break
                 }
             }
             //下
-            for(var r=1; r<=me.blastRange[i][3]; r++) {
-                if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 0) {
-                    g.drawImage(blast, me.blastYX[i][1]*squareSize, (me.blastYX[i][0]+r)*squareSize, squareSize, squareSize)
+            for (var r = 1; r <= me.blastRange[i][3]; r++) {
+                if (map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] == 0) {
+                    g.drawImage(blast, me.blastYX[i][1] * squareSize, (me.blastYX[i][0] + r) * squareSize, squareSize, squareSize)
                     //死亡判定
-                    if(Math.round(me.gY/squareSize) == me.blastYX[i][0]+r && Math.round(me.gX/squareSize) == me.blastYX[i][1]) {
+                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] + r && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
                         me.operable = 0;
                     }
                     //壊れる壁なら消す
-                }else if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 2) {
-                    map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] = 0
-                }else{
+                } else if (map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] == 2) {
+                    map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] = 0
+                } else {
                     break
                 }
             }
         }
     }
 
+    const sendOperable = (operable) => {
+        socket.emit('operable', {
+            operable: operable,
+        });
+    };
+
+    sendOperable(3);  // myN の後に sendOperable を呼び出す
+    
+    
+    socket.on('game_end', (data) => {
+        console.log("ゲームが終わりました:", data); // dataの内容をコンソールで確認
+    
+        // URLのクエリパラメータからplayernameを取得
+        const params = new URLSearchParams(window.location.search);
+        const playerName = params.get('playername'); // playernameを取得
+    
+        // 'game_end' から取得したデータ（ここではoperableN）をログに出力
+        console.log(`operableN: ${data.operableN}`);
+        
+        // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
+        location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
+    });
+    
+
     //プレイヤー描画
-    if(me.operable) {
+    if (me.operable) {
         user.style.left = me.gX;
         user.style.top = me.gY;
         g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
@@ -238,21 +263,23 @@ function draw()
         g.textAlign = 'center';
         g.fillText(me.name, me.gX+squareSize/2, me.gY);
     }
-    
+
 }
 
-window.onkeydown = function(ev)
-{
+window.onkeydown = function (ev) {
     gKey[ev.keyCode] = 1;
 }
 
-window.onkeyup = function(ev)
-{
-    gKey[ ev.keyCode ] = 0;
+window.onkeyup = function (ev) {
+    gKey[ev.keyCode] = 0;
 }
 
 
-window.onload = function()
-{
-    requestAnimationFrame( onPaint );
+window.onload = function () {
+    requestAnimationFrame(onPaint);
 }
+
+socket.on('game_end', () => {
+    // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
+    location.href = `game.html`;
+});
