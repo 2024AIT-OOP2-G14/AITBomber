@@ -2,6 +2,8 @@ class Player{
     bombLimiter = 180   //爆弾が爆発するまでのフレーム数（180で3秒）
     blastLimiter = 30   //爆風の持続フレーム数
 
+    name = 'hogehoge';
+
     gN;
     gX;
     gY;
