@@ -103,8 +103,14 @@ def handle_join_room(data):
     if playername not in rooms[room_id]['players']:
         rooms[room_id]['players'].append(playername)
     
+    # プレイヤー番号 (myN) を割り振る
+    myN = rooms[room_id]['players'].index(playername)
+
     # プレイヤーをルームに追加
     join_room(room_id)
+
+    # プレイヤー自身に番号を送信
+    emit('assign_number', {'myN': myN}, room=request.sid)
     # ルーム全員にルーム情報を送信
     emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id)
 
@@ -147,9 +153,14 @@ def handle_disconnect():
 def game():
     if request.method == 'POST':
         room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
+        playername = request.form.get('playername')  # フォームデータからプレイヤー名を取得
     else:  # GETリクエストの場合（クエリパラメータから取得）
         room_id = request.args.get('room_id')
-    return render_template('game.html', room_id=room_id)
+        playername = request.args.get('playername')
+    # プレイヤー番号を計算して送信
+    myN = rooms[room_id]['players'].index(playername)
+    return render_template('game.html', room_id=room_id, myN=myN)
+
 
 
 if __name__ == '__main__':

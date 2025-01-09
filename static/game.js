@@ -55,8 +55,7 @@ socket.on('game_started', (data) => {
 
     // URLのクエリパラメータからplayernameを取得する
     const params = new URLSearchParams(window.location.search);
-    const playerName = params.get('playername');  // 'playername' パラメータを取得
-
+    const playerName = params.get('playername'); // playernameを取得
     // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
     location.href = `game.html?room_id=${data.room_id}&playername=${playerName}`;
 });
