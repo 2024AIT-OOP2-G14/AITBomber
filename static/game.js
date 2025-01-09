@@ -1,4 +1,6 @@
-const socket = io();
+// game.js（他のファイル）
+console.log(socket);  // window.socketとしてグローバルにアクセスできる
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);

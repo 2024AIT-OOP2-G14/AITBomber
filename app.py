@@ -159,9 +159,36 @@ def game():
         playername = request.args.get('playername')
     # プレイヤー番号を計算して送信
     myN = rooms[room_id]['players'].index(playername)
-    return render_template('game.html', room_id=room_id, myN=myN)
+    countmyN = len(rooms[room_id]['players'])
+    return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
 
+@socketio.on('operable')
+def operable(data):
+    operable = data.get('operable')  # operableをデータから取得
+    operableN = 0
+    operableN += operable  # operableNにoperableを加算
 
+    logging.warning(f"operable {operable}")
+
+    if request.method == 'POST':
+        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
+    else:  # GETリクエストの場合（クエリパラメータから取得）
+        room_id = request.args.get('room_id')
+    if operable == 0:
+         emit('game_end', {'operableN': operableN, 'room_id': room_id})#たいきはここをどうにかしてくれ
+ 
+    
+
+@app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
+def ranking():
+    if request.method == 'POST':
+        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
+        playername = request.form.get('playername')  # フォームデータからプレイヤー名を取得
+    else:  # GETリクエストの場合（クエリパラメータから取得）
+        room_id = request.args.get('room_id')
+        playername = request.args.get('playername')
+
+    return render_template('ranking.html', room_id=room_id, playername=playername)
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port=8080, debug=True)
