@@ -49,6 +49,10 @@ function startGame(roomId, playerName) {
     socket.emit('start_game', { room_id: roomId, playername: playerName });
 }
 
+socket.on('assign_number', (data) => {
+    myN = data.myN;
+});
+
 // ゲーム開始の通知
 socket.on('game_started', (data) => {
     console.log("ゲームが開始されました:", data); // dataの内容も確認できるようにする
@@ -56,6 +60,7 @@ socket.on('game_started', (data) => {
     // URLのクエリパラメータからplayernameを取得する
     const params = new URLSearchParams(window.location.search);
     const playerName = params.get('playername'); // playernameを取得
+ 
     // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
     location.href = `game.html?room_id=${data.room_id}&playername=${playerName}`;
 });
