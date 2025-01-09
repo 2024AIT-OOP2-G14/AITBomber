@@ -5,15 +5,16 @@
     <title>Fighting!|AITボンバー</title>
     <meta charset="utf-8">
     <link rel="stylesheet" href="../static/style.css">
-    <script type = "text/javascript" src = "../static/map.js"></script>
-    <script type = "text/javascript" src = "../static/player.js"></script>
-    <script type = "text/javascript" src = "../static/main.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script>
+        const myN = {{ myN | tojson }};
+    </script>
+    
 </head>
-
 <body>
     <main>
         <p>ルームID: <strong>{{ room_id }}</strong></p>
+        <p>{{myN}}</p>
         <p>score:660</p>
         <!--上のアイテム欄のつもり-->
         <ul>
@@ -21,10 +22,14 @@
             <img src=#>
             <img src=#>
         </ul>
-            <body style = "background:#2e2930">
-            <canvas id = "main" width = "720" height = "540">
-            </body>
+
+        <body style="background:#2e2930">
+            <canvas id="main" width="720" height="540">
+        </body>
     </main>
 </body>
+<script type="text/javascript" src="../static/map.js"></script>
+<script type="text/javascript" src="../static/player.js"></script>
+<script type="text/javascript" src="../static/main.js"></script>
 
 </html>

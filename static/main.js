@@ -29,9 +29,8 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
-//プレイヤー番号
-let myN = 0;
-
+// htmlからmyNを取得
+console.log(`ルームに参加します: myN=${myN}`);
 //埋まっているかのフラッグ
 let nowisIW=false
 
