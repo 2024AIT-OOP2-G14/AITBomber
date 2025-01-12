@@ -1,4 +1,5 @@
 "use strict";
+let socket = io();
 
 let gKey = new Uint8Array( 0x100 );
 let gTimer;
@@ -78,7 +79,15 @@ blast.src = "../static/image/blast.png";
 
 //マップ生成
 var map = new Map(wblock,hblock);
-map.GenerateBreakWall();
+if(myN==0){
+    //ホストがマップ生成
+    map.GenerateBreakWall();
+    socket.emit("server_echo",map.bombermap);
+}
+//マップ更新
+socket.on('maploader', (bombermap) => {
+    map.bombermap=bombermap
+});
 
 function onPaint ()
 {

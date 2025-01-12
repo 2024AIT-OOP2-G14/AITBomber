@@ -138,6 +138,10 @@ def handle_start_game(data):
     }, room=room_id)
 
 
+#ホストからのマップ情報をホスト以外全員へ送る
+@socketio.on('server_echo')
+def server_echo(bombermap) :
+    emit('maploader',bombermap,broadcast=True)
 
 @socketio.on('disconnect')
 def handle_disconnect():
