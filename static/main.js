@@ -243,13 +243,23 @@ function draw() {
     }
 
     const sendOperable = (operable) => {
+        const params = new URLSearchParams(window.location.search);
+        const playerName = params.get('playername');
+        const roomId = params.get('room_id');
+
         socket.emit('operable', {
             operable: operable,
+            playername: playerName,
+            room_id: roomId
         });
+
+        if (!operable) {
+            // プレイヤーが死亡した場合に死亡判定を送信
+            socket.emit('player_death', { playername: playerName });
+        }
     };
 
     sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
-
 
     socket.on('game_end', (data) => {
         console.log("ゲームが終わりました:", data); // dataの内容をコンソールで確認
@@ -264,7 +274,6 @@ function draw() {
         // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
         location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
     });
-
 
     //プレイヤー描画
     if (me.operable) {

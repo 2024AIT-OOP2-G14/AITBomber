@@ -14,6 +14,7 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
+death_order = []  # 死亡順を保持
 
 @app.route('/')
 def index():
@@ -162,6 +163,7 @@ def game():
     countmyN = len(rooms[room_id]['players'])
     return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
 
+#死亡判定
 @socketio.on('operable')
 def operable(data):
     operable = data.get('operable')  # operableをデータから取得
@@ -170,12 +172,22 @@ def operable(data):
 
     logging.warning(f"operable {operable}")
 
-    if request.method == 'POST':
-        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
-    else:  # GETリクエストの場合（クエリパラメータから取得）
-        room_id = request.args.get('room_id')
+    room_id = data.get('room_id')
+    
+    playername = data.get('playername')
+    
+    if playername not in death_order:
+        death_order.append(playername)
+        
     if operable == 0:
-         emit('game_end', {'operableN': operableN, 'room_id': room_id})#たいきはここをどうにかしてくれ
+        # 確認用のログ出力
+        logging.info(f"\n\noperableN {operableN}")
+        logging.info(f"room_id {room_id}")
+        logging.info(f"playername {playername}")
+        logging.info(f"death_order {death_order}\n\n")
+        
+        emit('game_end', {'operableN': operableN},broadcast=True)#たいきはここをどうにかしてくれ
+        emit('ranking_data', {'room_id': room_id,'playerName':playername,'death_order': death_order},broadcast=True)
  
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
