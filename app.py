@@ -168,7 +168,6 @@ def operable(data):
     operableN = 0
     operableN += operable  # operableNにoperableを加算
 
-    logging.warning(f"operable {operable}")
 
     if request.method == 'POST':
         room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
@@ -181,8 +180,6 @@ def operable(data):
 @socketio.on('save_map')
 def server_echo(bombermap) :
     emit('maploader',bombermap,broadcast=True)
-
-
 
 @app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
 def ranking():
