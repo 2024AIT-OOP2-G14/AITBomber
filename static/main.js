@@ -78,8 +78,6 @@ bomb.src = "../static/image/bomb.png";
 //爆風画像
 blast.src = "../static/image/blast.png";
 
-//ソケットに接続
-socket.on('connect', () => {})
 
 //マップ生成
 var map = new Map(wblock, hblock);
@@ -88,11 +86,13 @@ if(myN==0){
     map.GenerateBreakWall();
     socket.emit("save_map",map.bombermap);
 }else{
-    //マップ更新
-    socket.on('maploader', (bombermap) => {
-        map.bombermap=bombermap
-    });
+    socket.on('connect', () => {})
 }
+
+//マップ更新
+socket.on('maploader', (bombermap) => {
+    map.bombermap=bombermap
+});
 
 function onPaint() {
     //frameParSecond管理（60fps）
