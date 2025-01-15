@@ -1,5 +1,5 @@
-// main.js（他のファイル）
-console.log(socket);  // window.socketとしてグローバルにアクセスできる
+console.log(socket);  // window.socketとしてグローバルにアクセスできる（ソケットが動いているか確認用）
+"use strict";
 
 let gKey = new Uint8Array(0x100);
 let gTimer;
@@ -30,8 +30,6 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
-// htmlからmyNを取得
-console.log(`ルームに参加します: myN=${myN}`);
 //埋まっているかのフラッグ
 let nowisIW = false
 
@@ -281,7 +279,8 @@ function draw() {
         socket.emit('operable', {
             operable: operable,
             playername: playerName,
-            room_id: roomId
+            room_id: roomId,
+            countmyN: countmyN
         });
 
         if (!operable) {
@@ -290,7 +289,8 @@ function draw() {
         }
     };
 
-    sendOperable(player[myN].operable);  // myN の後に sendOperable を呼び出す
+    sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
+
 
     socket.on('game_end', (data) => {
         console.log("ゲームが終わりました:", data); // dataの内容をコンソールで確認
@@ -306,6 +306,10 @@ function draw() {
         location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
     });
 
+    //自分の情報を送る
+    //socket.emit('send_player', me);
+
+
     //プレイヤー描画
     for (var i = 0; i < 4; i++){
         if (player[i].operable) {
@@ -320,8 +324,27 @@ function draw() {
     }
 
 }
-  
+const sendOperable = (operable) => {
+    socket.emit('operable', {
+        operable: operable,countmyN:countmyN
+    });
+};
+if(me.operable==0){
+    console.log(`me.operable=${me.operable}`);
+    sendOperable(0);  // myN の後に sendOperable を呼び出す
+}
 
+socket.on('game_end', (data) => {
+    // URLのクエリパラメータからplayernameを取得
+    const params = new URLSearchParams(window.location.search);
+    const playerName = params.get('playername'); // playernameを取得
+
+    // 'game_end' から取得したデータ（ここではoperableN）をログに出力
+    console.log(`operableN: ${data.operableN}`);
+    
+    // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
+    location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
+});
 window.onkeydown = function (ev) {
     gKey[ev.keyCode] = 1;
 }
@@ -333,9 +356,30 @@ window.onkeyup = function (ev) {
 
 window.onload = function () {
     requestAnimationFrame(onPaint);
-}
 
-socket.on('game_end', () => {
-    // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
-    location.href = `game.html`;
+}
+// ソケットに接続
+socket.on('connect', () => {
+    // URLのクエリパラメータからroom_idを取得
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('room_id');
+
+    if (roomId) {
+        // プレイヤーをルームに参加させる
+        socket.emit('join_room', { room_id: roomId });
+    } else {
+        console.error('room_id is not found in URL parameters');
+    }
 });
+
+socket.on('game_end', (data) => {
+    console.log("ゲームが終わりました:", data); // ゲーム終了データを確認
+
+    // URLのクエリパラメータからplayernameを取得
+    const params = new URLSearchParams(window.location.search);
+    const playerName = params.get('playername'); // プレイヤー名を取得
+    // ランキングページに遷移（room_id と playername をクエリに追加）
+    location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
+});
+
+
