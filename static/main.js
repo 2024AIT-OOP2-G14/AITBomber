@@ -84,7 +84,6 @@ socket.on('connect', () => { })
 //マップ生成
 var map = new Map(wblock, hblock);
 
-
 socket.on('connect', () => {
     if (myN === 0) {
         // ホストがマップ生成
@@ -96,6 +95,15 @@ socket.on('connect', () => {
 // マップの更新受信
 socket.on('maploader', (bombermap) => {
     map.bombermap = bombermap;
+});
+
+socket.on('mapchanger', (data) => {
+    const { cx, cy, mapData } = data; // 受け取ったデータを展開
+    map.bombermap[cx][cy] = mapData;  // マップを更新
+});
+
+socket.on('playerReceiver', (playerData) => {
+    me[playerData.gN] = playerData;
 });
 
 
@@ -135,7 +143,8 @@ function onPaint() {
                 nowisIW = false
             }
             //タイマー進める
-            me.bTimer(map.bombermap);
+            //console.log('player.bTimer(): ', me.bTimer());
+            me.bTimer();
         }
 
         //スペースキーが押し込まれたらボムを置く
@@ -195,6 +204,11 @@ function draw() {
                     //壊れる壁なら消す
                 } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] == 2) {
                     map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] = 0
+                    socket.emit('changes_map', {
+                        cx: me.blastYX[i][0], // 変更したマスの x 座標
+                        cy: me.blastYX[i][1] - r, // 変更したマスの y 座標
+                        mapData: 0 // そのマスの新しい値
+                    });
                 } else {
                     break
                 }
@@ -210,6 +224,11 @@ function draw() {
                     //壊れる壁なら消す
                 } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] == 2) {
                     map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] = 0
+                    socket.emit('changes_map', {
+                        cx: me.blastYX[i][0], // 変更したマスの x 座標
+                        cy: me.blastYX[i][1] + r, // 変更したマスの y 座標
+                        mapData: 0 // そのマスの新しい値
+                    });
                 } else {
                     break
                 }
@@ -225,6 +244,11 @@ function draw() {
                     //壊れる壁なら消す
                 } else if (map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] == 2) {
                     map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] = 0
+                    socket.emit('changes_map', {
+                        cx: me.blastYX[i][0] - r, // 変更したマスの x 座標
+                        cy: me.blastYX[i][1], // 変更したマスの y 座標
+                        mapData: 0 // そのマスの新しい値
+                    });
                 } else {
                     break
                 }
@@ -240,6 +264,11 @@ function draw() {
                     //壊れる壁なら消す
                 } else if (map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] == 2) {
                     map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] = 0
+                    socket.emit('changes_map', {
+                        cx: me.blastYX[i][0] + r, // 変更したマスの x 座標
+                        cy: me.blastYX[i][1], // 変更したマスの y 座標
+                        mapData: 0 // そのマスの新しい値
+                    });
                 } else {
                     break
                 }
@@ -279,6 +308,9 @@ function draw() {
         // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
         location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
     });
+
+    //自分の情報を送る
+    //socket.emit('send_player', me);
 
     //プレイヤー描画
     if (me.operable) {
