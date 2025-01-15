@@ -83,16 +83,21 @@ socket.on('connect', () => { })
 
 //マップ生成
 var map = new Map(wblock, hblock);
-if (myN == 0) {
-    //ホストがマップ生成
-    map.GenerateBreakWall();
-    socket.emit("save_map", map.bombermap);
-} else {
-    //マップ更新
-    socket.on('maploader', (bombermap) => {
-        map.bombermap = bombermap
-    });
-}
+
+
+socket.on('connect', () => {
+    if (myN === 0) {
+        // ホストがマップ生成
+        map.GenerateBreakWall();
+        socket.emit('save_map', map.bombermap);
+    }
+});
+
+// マップの更新受信
+socket.on('maploader', (bombermap) => {
+    map.bombermap = bombermap;
+});
+
 
 function onPaint() {
     //frameParSecond管理（60fps）
