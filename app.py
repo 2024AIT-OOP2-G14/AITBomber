@@ -197,15 +197,15 @@ def server_echo(bombermap) :
 #マップの変更点を送る
 @socketio.on('changes_map')
 def change(data):
-    cx = data.get('cx')
     cy = data.get('cy')
+    cx = data.get('cx')
     mapData = data.get('mapData')
 
-    emit('mapchanger', {'cx': cx, 'cy': cy, 'mapData': mapData}, broadcast=True)
+    emit('mapchanger', {'cy': cy, 'cx': cx, 'mapData': mapData}, broadcast=True)
 
  #プレイヤー情報を送る
 @socketio.on('send_player')
-def change(playerData):
+def send(playerData):
     emit('playerReceiver', playerData, broadcast=True)
 
 @app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移

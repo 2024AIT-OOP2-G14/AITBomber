@@ -38,6 +38,12 @@ class Player{
             this.bCount ++;
             //ボムが置かれた座標の値を３にする
             map.bombermap[this.bYX[this.nextBombID][0]][this.bYX[this.nextBombID][1]]=3
+            socket.emit('changes_map', {
+                cy: this.bYX[this.nextBombID][0], // 変更したマスの y 座標
+                cx: this.bYX[this.nextBombID][1], // 変更したマスの x 座標
+                mapData: 3 // そのマスの新しい値
+            });
+
             gTimer += 16.67;
             if(this.nextBombID+1 == this.bLimit) {
                 this.nextBombID = 0;
@@ -48,7 +54,7 @@ class Player{
     }
 
     //爆弾・爆風のタイマー管理
-    bTimer(m) {
+    bTimer() {
         //置いている爆弾を探索し、その爆弾のタイマーを一律で減らしていく
         for(var i=0; i<this.bLimit;i++) {
             //爆弾が存在するならその爆弾のタイマーを減らす
@@ -63,6 +69,11 @@ class Player{
                     let x = this.bYX[i][1]
                     //タイマーが0を回ったら当たり判定を消す
                     map.bombermap[y][x]=0
+                    socket.emit('changes_map', {
+                        cy: y, // 変更したマスの y 座標
+                        cx: x, // 変更したマスの x 座標
+                        mapData: 0 // そのマスの新しい値
+                    });
 
                     this.bYX[i] = [];
                     this.blastYX[i] = [y,x];
@@ -129,5 +140,7 @@ class Player{
             }
         }
     }
+
+
 
 }
