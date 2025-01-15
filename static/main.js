@@ -262,6 +262,7 @@ function draw() {
 
     sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
 
+
     //プレイヤー描画
     if (me.operable) {
         user.style.left = me.gX;
@@ -273,7 +274,27 @@ function draw() {
     }
 
 }
+const sendOperable = (operable) => {
+    socket.emit('operable', {
+        operable: operable,countmyN:countmyN
+    });
+};
+if(me.operable==0){
+    console.log(`me.operable=${me.operable}`);
+    sendOperable(0);  // myN の後に sendOperable を呼び出す
+}
 
+socket.on('game_end', (data) => {
+    // URLのクエリパラメータからplayernameを取得
+    const params = new URLSearchParams(window.location.search);
+    const playerName = params.get('playername'); // playernameを取得
+
+    // 'game_end' から取得したデータ（ここではoperableN）をログに出力
+    console.log(`operableN: ${data.operableN}`);
+    
+    // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
+    location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
+});
 window.onkeydown = function (ev) {
     gKey[ev.keyCode] = 1;
 }
@@ -285,6 +306,7 @@ window.onkeyup = function (ev) {
 
 window.onload = function () {
     requestAnimationFrame(onPaint);
+
 }
 // ソケットに接続
 socket.on('connect', () => {
@@ -309,4 +331,5 @@ socket.on('game_end', (data) => {
     // ランキングページに遷移（room_id と playername をクエリに追加）
     location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
 });
+
 

@@ -166,14 +166,13 @@ def game():
     myN = rooms[room_id]['players'].index(playername)
     countmyN = len(rooms[room_id]['players'])
     return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
+
 @socketio.on('operable')
 def operable(data):
     operable = data.get('operable')  # 生きているか
     room_id = data.get('room_id')  # ルームID
     playername = data.get('playername')  # プレイヤー名
     countmyN = data.get('countmyN')  # 現在の部屋のプレイヤー数
-
-    logging.info(f"Received data: room_id={room_id}, playername={playername}, operable={operable}, countmyN={countmyN}")
 
     # 初期化
     if room_id not in rooms_operable:
