@@ -4,21 +4,36 @@
 <head>
     <title>ランキング|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href=".css">
+    <!-- <link rel="stylesheet" href=".css"> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="../static/socket.js"></script>
 </head>
 
 <body>
     <main>
         <h1>ランキング</h1>
-        <p>score:660</p>
-        <ol>
-            <li>かまたく キル数:100</li>
-            <li>しばいぬ キル数:1</li>
-            <li>さとゆう キル数:0</li>
+        <ol id="ranking-list">
+            <!-- リスト -->
         </ol>
-        <a href="index.html">タイトルに戻る</a>
+        <a href="{{url_for('index')}}">タイトルに戻る</a>
 
     </main>
+
+    <script>
+        var socket = io();
+
+        socket.on('ranking_data', function (data) {
+            console.log("Received ranking_data:", data); // デバッグ用ログ
+            // ランキングリストを更新
+            var rankingList = document.getElementById('ranking-list');
+            rankingList.innerHTML = '';
+            data.death_order.forEach(function (playerName) {
+                var li = document.createElement('li');
+                li.textContent = playerName;
+                rankingList.appendChild(li);
+            });
+        });
+    </script>
 </body>
 
 </html>
