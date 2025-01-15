@@ -24,9 +24,6 @@ class Player{
     blastTime = [0,0,0,0,0,0,0,0,0,0];
     blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
-    //マップ読み込み
-    map = new Map();
-
     constructor(gn,gx,gy){
         this.gN = gn;
         this.gX = gx;
@@ -72,7 +69,7 @@ class Player{
                     this.blastTime[i] = this.blastLimiter;
 
                     //この段階で実際の爆風の距離を確定させる
-                    this.explotionRange(i,m)
+                    this.explotionRange(i)
                 }
             }
         }    
@@ -102,32 +99,32 @@ class Player{
     }
 
     //実際の爆風の距離を計算
-    explotionRange (i, m){
+    explotionRange (i){
         //左
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][0] ++
-            if(m[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0) {
                 break
             }
         }
         //右
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][1] ++
-            if(m[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0) {
                 break
             }
         }
         //上
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][2] ++
-            if(m[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0) {
+            if(map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0) {
                 break
             }
         }
         //下
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][3] ++
-            if(m[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
+            if(map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
                 break
             }
         }

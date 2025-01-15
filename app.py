@@ -216,6 +216,21 @@ def operable(data):
 def server_echo(bombermap) :
     emit('maploader',bombermap,broadcast=True)
 
+
+#マップの変更点を送る
+@socketio.on('changes_map')
+def change(data):
+    cx = data.get('cx')
+    cy = data.get('cy')
+    mapData = data.get('mapData')
+
+    emit('mapchanger', {'cx': cx, 'cy': cy, 'mapData': mapData}, broadcast=True)
+
+ #プレイヤー情報を送る
+@socketio.on('send_player')
+def change(playerData):
+    emit('playerReceiver', playerData, broadcast=True)
+
 @app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
 def ranking():
     if request.method == 'POST':
