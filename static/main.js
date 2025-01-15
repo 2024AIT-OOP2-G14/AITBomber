@@ -248,12 +248,14 @@ function draw() {
         const params = new URLSearchParams(window.location.search);
         const playerName = params.get('playername');
         const roomId = params.get('room_id');
+
         socket.emit('operable', {
             operable: operable,
             playername: playerName,
             room_id: roomId,
             countmyN: countmyN
         });
+
         if (!operable) {
             // プレイヤーが死亡した場合に死亡判定を送信
             socket.emit('player_death', { playername: playerName });
@@ -261,7 +263,6 @@ function draw() {
     };
 
     sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
-
 
     //プレイヤー描画
     if (me.operable) {

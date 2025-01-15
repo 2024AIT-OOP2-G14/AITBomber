@@ -16,9 +16,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
+
 death_order = {}  # 死亡順を保持
 rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
 rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
+
 
 @app.route('/')
 def index():
@@ -167,8 +169,10 @@ def game():
     countmyN = len(rooms[room_id]['players'])
     return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
 
+#死亡判定
 @socketio.on('operable')
 def operable(data):
+
     operable = data.get('operable')  # 生きているか
     room_id = data.get('room_id')  # ルームID
     playername = data.get('playername')  # プレイヤー名
@@ -206,13 +210,13 @@ def operable(data):
         emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
 
 
-        
+
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
 def server_echo(bombermap) :
     emit('maploader',bombermap,broadcast=True)
 
-@app.route('/ranking.html', methods=['GET', 'POST'])  # ランキング画面に遷移
+@app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
 def ranking():
     if request.method == 'POST':
         room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
