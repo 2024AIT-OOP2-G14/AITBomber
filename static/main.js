@@ -1,5 +1,4 @@
-// main.js（他のファイル）
-console.log(socket);  // window.socketとしてグローバルにアクセスできる
+console.log(socket);  // window.socketとしてグローバルにアクセスできる（ソケットが動いているか確認用）
 "use strict";
 
 let gKey = new Uint8Array(0x100);
@@ -31,8 +30,6 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
-// htmlからmyNを取得
-console.log(`ルームに参加します: myN=${myN}`);
 //埋まっているかのフラッグ
 let nowisIW = false
 
@@ -79,10 +76,11 @@ bomb.src = "../static/image/bomb.png";
 blast.src = "../static/image/blast.png";
 
 //ソケットに接続
-socket.on('connect', () => {})
+socket.on('connect', () => { })
 
 //マップ生成
 var map = new Map(wblock, hblock);
+
 
 socket.on('connect', () => {
     if (myN === 0) {
@@ -112,37 +110,37 @@ function onPaint() {
         //各キーが押し込まれたら、プレイヤーの座標が毎フレーム更新される
         //斜め移動をしながら壁にぶつかった時、壁沿いに動けるように、上下左右それぞれで壁判定を行う
         //60fpsよりフレームレートが低い環境では、時間関連のイベントが複数回行われるようにします。（60fpsで動かす想定なので、30fpsの環境では移動処理が二度行われます。）
-        while( gTimer + 16.67 < performance.now() ){
+        while (gTimer + 16.67 < performance.now()) {
             gTimer += 16.67;
-            if(me.operable) {
+            if (me.operable) {
                 //今埋まっているか調べる
-                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){
-                    nowisIW=true
+                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) {
+                    nowisIW = true
                 }
                 me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX += gKey[65] * me.gS} //ダメならもどす
+                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gX += gKey[65] * me.gS } //ダメならもどす
 
                 me.gX += gKey[68] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gX -= gKey[68] * me.gS}
+                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gX -= gKey[68] * me.gS }
 
                 me.gY -= gKey[87] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY += gKey[87] * me.gS}
+                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gY += gKey[87] * me.gS }
 
                 me.gY += gKey[83] * me.gS;
-                if (map.isInsideWall(me.gX,me.gY,nowisIW,map.bombermap)){me.gY -= gKey[83] * me.gS}
+                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gY -= gKey[83] * me.gS }
                 //値を戻す
-                nowisIW=false
+                nowisIW = false
             }
             //タイマー進める
-            me.bTimer(map.bombermap); 
+            me.bTimer(map.bombermap);
         }
-            
+
         //スペースキーが押し込まれたらボムを置く
-        if(spaceTime>0){
+        if (spaceTime > 0) {
             spaceTime--;
         }
 
-        if(me.operable && gKey[32]==1 && spaceTime==0) {
+        if (me.operable && gKey[32] == 1 && spaceTime == 0) {
             me.setBomb();
             spaceTime = spaceKeyRecharge;
         }
@@ -247,28 +245,22 @@ function draw() {
     }
 
     const sendOperable = (operable) => {
+        const params = new URLSearchParams(window.location.search);
+        const playerName = params.get('playername');
+        const roomId = params.get('room_id');
         socket.emit('operable', {
             operable: operable,
+            playername: playerName,
+            room_id: roomId,
+            countmyN: countmyN
         });
+        if (!operable) {
+            // プレイヤーが死亡した場合に死亡判定を送信
+            socket.emit('player_death', { playername: playerName });
+        }
     };
 
-    sendOperable(3);  // myN の後に sendOperable を呼び出す
-    
-    
-    socket.on('game_end', (data) => {
-        console.log("ゲームが終わりました:", data); // dataの内容をコンソールで確認
-    
-        // URLのクエリパラメータからplayernameを取得
-        const params = new URLSearchParams(window.location.search);
-        const playerName = params.get('playername'); // playernameを取得
-    
-        // 'game_end' から取得したデータ（ここではoperableN）をログに出力
-        console.log(`operableN: ${data.operableN}`);
-        
-        // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
-        location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
-    });
-    
+    sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
 
     //プレイヤー描画
     if (me.operable) {
@@ -277,7 +269,7 @@ function draw() {
         g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
         g.fillStyle = "#ffffff";
         g.textAlign = 'center';
-        g.fillText(me.name, me.gX+squareSize/2, me.gY);
+        g.fillText(me.name, me.gX + squareSize / 2, me.gY);
     }
 
 }
@@ -294,8 +286,27 @@ window.onkeyup = function (ev) {
 window.onload = function () {
     requestAnimationFrame(onPaint);
 }
+// ソケットに接続
+socket.on('connect', () => {
+    // URLのクエリパラメータからroom_idを取得
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('room_id');
 
-socket.on('game_end', () => {
-    // game.html に遷移（プレイヤーネームもクエリパラメータとして追加）
-    location.href = `game.html`;
+    if (roomId) {
+        // プレイヤーをルームに参加させる
+        socket.emit('join_room', { room_id: roomId });
+    } else {
+        console.error('room_id is not found in URL parameters');
+    }
 });
+
+socket.on('game_end', (data) => {
+    console.log("ゲームが終わりました:", data); // ゲーム終了データを確認
+
+    // URLのクエリパラメータからplayernameを取得
+    const params = new URLSearchParams(window.location.search);
+    const playerName = params.get('playername'); // プレイヤー名を取得
+    // ランキングページに遷移（room_id と playername をクエリに追加）
+    location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
+});
+

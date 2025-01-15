@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
+import time
 import uuid  # UUIDを生成するモジュール
 import sys
 import logging
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
@@ -14,6 +16,9 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
+death_order = {}  # 死亡順を保持
+rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
+rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
 
 @app.route('/')
 def index():
@@ -161,27 +166,54 @@ def game():
     myN = rooms[room_id]['players'].index(playername)
     countmyN = len(rooms[room_id]['players'])
     return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
-
 @socketio.on('operable')
 def operable(data):
-    operable = data.get('operable')  # operableをデータから取得
-    operableN = 0
-    operableN += operable  # operableNにoperableを加算
+    operable = data.get('operable')  # 生きているか
+    room_id = data.get('room_id')  # ルームID
+    playername = data.get('playername')  # プレイヤー名
+    countmyN = data.get('countmyN')  # 現在の部屋のプレイヤー数
+
+    logging.info(f"Received data: room_id={room_id}, playername={playername}, operable={operable}, countmyN={countmyN}")
+
+    # 初期化
+    if room_id not in rooms_operable:
+        rooms_operable[room_id] = {}
+        rooms_count[room_id] = countmyN
+    death_order.setdefault(room_id, [])
+
+    # 状態を更新
+    rooms_operable[room_id][playername] = operable
+    alive_count = countmyN
+    # 死亡リストの更新
+    if operable == 0 and playername not in death_order[room_id]:
+        alive_count -= 1
+        death_order[room_id].append(playername)
+
+    # 生存者が1人になった場合
+    if alive_count == 1:
+        # 最後の生存者を死亡リストに追加
+        for player, state in rooms_operable[room_id].items():
+            if state == 1 and player not in death_order[room_id]:
+                death_order[room_id].append(player)
+                break
+
+        # ランキングデータ送信
+        emit('ranking_data', {
+            'room_id': room_id,
+            'death_order': death_order[room_id]
+        }, room=room_id)
+
+        # ゲーム終了イベント送信
+        emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
 
 
-    if request.method == 'POST':
-        room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
-    else:  # GETリクエストの場合（クエリパラメータから取得）
-        room_id = request.args.get('room_id')
-    if operable == 0:
-         emit('game_end', {'operableN': operableN, 'room_id': room_id})#たいきはここをどうにかしてくれ
- 
+        
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
 def server_echo(bombermap) :
     emit('maploader',bombermap,broadcast=True)
 
-@app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
+@app.route('/ranking.html', methods=['GET', 'POST'])  # ランキング画面に遷移
 def ranking():
     if request.method == 'POST':
         room_id = request.form.get('roomid')  # フォームデータからルームIDを取得
@@ -190,7 +222,13 @@ def ranking():
         room_id = request.args.get('room_id')
         playername = request.args.get('playername')
 
-    return render_template('ranking.html', room_id=room_id, playername=playername)
+    # ランキングデータを渡してテンプレートをレンダリング
+    return render_template(
+        'ranking.html',
+        room_id=room_id,
+        playername=playername,
+        death_order=death_order  # ランキングデータ
+    )
 
 if __name__ == '__main__':
     socketio.run(app, host="0.0.0.0", port=8080, debug=True)
