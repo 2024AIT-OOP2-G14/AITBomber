@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
 import time
 import uuid  # UUIDを生成するモジュール
@@ -16,9 +16,11 @@ socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
+
 death_order = {}  # 死亡順を保持
 rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
 rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
+
 
 @app.route('/')
 def index():
@@ -41,18 +43,12 @@ def roomselect():
 
 @app.route('/roommake', methods=['GET', 'POST'])
 def roommake():
-    if request.method == 'GET':
-        # `room_id` を一回だけ生成してセッションに保存
-        room_id = str(uuid.uuid4())[:8]
-        session['room_id'] = room_id
-        return render_template('roommake.html', room_id=room_id)
-
+    room_id = str(uuid.uuid4())[:8]
     if request.method == 'POST':
         playername = request.form.get('playername')
         roomname = request.form.get('roomname')
-        rule = request.form.get('rule')
-        room_id = request.form.get('room_id')  # HTML から取得
-        if not playername or not roomname or not rule:
+        #rule = request.form.get('rule')
+        if not playername or not roomname:
             logging.warning("入力エラー: 必要な情報が不足しています")
             return redirect(url_for('roomselect'))
 
@@ -62,9 +58,12 @@ def roommake():
             'host': playername,
             'players': [playername],
         }
-        logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
+        #logging.info(f"ルーム作成: {rooms[room_id]}")  # 確認用
+        #logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
+
         # room_id と playername をクエリパラメータとして渡す
         return redirect(url_for('roomwait', room_id=room_id, playername=playername))
+    return render_template('roommake.html', room_id=room_id)
 
 
 @app.route('/roomwait', methods=['GET', 'POST'])
