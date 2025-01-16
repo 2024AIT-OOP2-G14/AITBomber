@@ -42,6 +42,30 @@ class Map{
         }     
     }
 
+    //アイテムが入った壁を生成
+    iteminWall(){
+        //分母、分子（好きに変えていいよ）
+        const den=5,div=4
+        //壁内側探索
+        for(var i=1; i<hblock; i++){
+            for(var j=1; j<wblock; j++){
+                //四方の角だけ生成しないようにする（複数プレイヤー置けるようになったら条件変えてもいいかも）
+                if((!(i==1&&(j==1||j==2||j==wblock-3||j==wblock-2)))&&(!(i==2&&(j==1||j==wblock-2)))&&(!(i==hblock-3&&(j==1||j==wblock-2)))&&(!(i==hblock-2&&((j==1||j==2||j==wblock-3||j==wblock-2))))){
+                    //何もないところにden分のdivの確率で壁を生成する
+                    if(this.bombermap[i][j]==0){
+                    if(Math.random()*den<=div){
+                        this.bombermap[i][j]=4
+                    }
+                    }
+                }
+            }
+        }     
+    }
+    
+    set_Item(){
+
+    }
+
     //(x,y)の座標が壁の中にあるか判定（boolean）
     isInsideWall(x,y,nowisIW) {
         let isIW = false

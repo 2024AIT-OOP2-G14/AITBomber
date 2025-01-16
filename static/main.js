@@ -24,6 +24,13 @@ const user = document.createElement('img');
 const kabe = document.createElement('img');
 //壊れる壁情報
 const breakabe = document.createElement('img');
+//アイテムが入った壁
+const item_wall = document.createElement('img');
+//アイテムの画像
+const item_number1 = document.createElement('img');
+const item_number2 = document.createElement('img');
+const item_number3 = document.createElement('img');
+const item_number4 = document.createElement('img');
 //爆弾情報
 const bomb = document.createElement('img');
 //爆風情報
@@ -71,6 +78,15 @@ kabe.src = "../static/image/kabe.png";
 //壊れる壁画像
 breakabe.src = "../static/image/breakabe.png";
 
+//アイテムが入った壁
+item_wall.src = "../static/image/hito.png";
+
+//アイテムの画像
+item_number1.src = "../static/image/power_up.png";
+item_number2.src = "../static/image/power_down.png";
+item_number3.src = "../static/image/speed_up.png";
+item_number4.src = "../static/image/speed_down.png";
+
 //爆弾画像
 bomb.src = "../static/image/bomb.png";
 
@@ -80,6 +96,7 @@ blast.src = "../static/image/blast.png";
 //マップ生成
 var map = new Map(wblock,hblock);
 map.GenerateBreakWall();
+map.iteminWall();
 
 function onPaint ()
 {
@@ -151,13 +168,33 @@ function draw()
                 g.drawImage(kabe, j*squareSize, i*squareSize, squareSize, squareSize)
             }else if(map.bombermap[i][j]==2){
                 g.drawImage(breakabe, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==4){
+                g.drawImage(item_wall, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==5){
+                g.drawImage(item_number1, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==6){
+                g.drawImage(item_number2, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==7){
+                g.drawImage(item_number3, j*squareSize, i*squareSize, squareSize, squareSize)
+            }else if(map.bombermap[i][j]==8){
+                g.drawImage(item_number4, j*squareSize, i*squareSize, squareSize, squareSize)
             }else if(me.existBomb(i,j)){
                 g.drawImage(bomb, j*squareSize, i*squareSize, squareSize, squareSize)
             }
         }
     }
 
+    // //アイテムの種類
+    // function getRandomInteger(min, max) {
+    //     return Math.floor(Math.random() * (max - min + 1)) + min;
+    // }
+    
+    function getRandomInteger(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
     //爆発の描画
+
     for(var i=0; i<me.bLimit; i++) {
         if(me.blastYX[i].length != 0) {
             g.drawImage(blast, me.blastYX[i][1]*squareSize, me.blastYX[i][0]*squareSize, squareSize, squareSize)
@@ -178,6 +215,9 @@ function draw()
                     //壊れる壁なら消す
                 }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 2){
                     map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r]=0
+                //アイテムが入った壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] == 4){
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]-r] = getRandomInteger(5,8);
                 }else{
                     break
                 }
@@ -193,6 +233,9 @@ function draw()
                     //壊れる壁なら消す
                 }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 2){
                     map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r]=0
+                //アイテムが入った壁なら消してアイテムを表示
+                }else if(map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] == 4){
+                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1]+r] = getRandomInteger(5,8);
                 }else{
                     break
                 }
@@ -208,8 +251,9 @@ function draw()
                     //壊れる壁なら消す
                 }else if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 2) {
                     map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] = 0
-                }else{
-                    break
+                //アイテムが入った壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] == 4){
+                    map.bombermap[me.blastYX[i][0]-r][me.blastYX[i][1]] = getRandomInteger(5,8);
                 }
             }
             //下
@@ -223,6 +267,9 @@ function draw()
                     //壊れる壁なら消す
                 }else if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 2) {
                     map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] = 0
+                //アイテムが入った壁なら消す
+                }else if(map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] == 4){
+                    map.bombermap[me.blastYX[i][0]+r][me.blastYX[i][1]] = getRandomInteger(5,8);
                 }else{
                     break
                 }
