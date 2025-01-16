@@ -35,11 +35,32 @@ let nowisIW = false
 
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 let player = [];
+switch (countmyN-1) {
+    case 1:
+        player.push(new Player(0, squareSize, squareSize));
+      break;
+    case 2:
+        player.push(new Player(0, squareSize, squareSize));
+        player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+    case 3:
+        player.push(new Player(0, squareSize, squareSize));
+        player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+        player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
+      break;
+    case 4:
+        player.push(new Player(0, squareSize, squareSize));
+        player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+        player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
+        player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
+      break;
+    default:
+        player.push(new Player(0, squareSize, squareSize));
+        player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+        player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
+        player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
+      break;
+  }
 
-player.push(new Player(0, squareSize, squareSize));
-player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
-player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
-player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
 
 let rWidth = squareSize;         // 任意の数を入れることで、プレイヤーの大きさが決定される
 let rHeight;
@@ -180,7 +201,7 @@ function draw() {
     }
 
     //爆発の描画
-    for(var h = 0; h < 4; h++) {
+    for(var h = 0; h < countmyN-1; h++) {
         for (var i = 0; i < player[h].bLimit; i++) {
             if (player[h].blastYX[i].length != 0) {
                 g.drawImage(blast, player[h].blastYX[i][1] * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
@@ -290,7 +311,7 @@ function draw() {
     });
 
     //プレイヤー描画
-    for (var i = 0; i < 4; i++){
+    for (var i = 0; i < countmyN-1; i++){
         if (player[i].operable) {
             user.style.left = player[i].gX;
             user.style.top = player[i].gY;
