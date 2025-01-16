@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <title>ランキング|AITボンバー</title>
     <meta charset="utf-8">
@@ -9,6 +10,7 @@
     <!-- <link rel="stylesheet" href=".css"> -->
 
 </head>
+
 <body>
     <main>
         <h1>ランキング</h1>
@@ -16,30 +18,15 @@
 
             {% if death_order.get(room_id) %}
             {% for player in death_order[room_id] | reverse %}
-                <li>{{ player }}</li>
+            <li>{{ player }}</li>
             {% endfor %}
-        {% else %}
+            {% else %}
             <li>ランキングデータがありません。</li>
-        {% endif %}
+            {% endif %}
         </ol>
         <a href="{{ url_for('index') }}">タイトルに戻る</a>
 
     </main>
-
-    <script>
-        var socket = io();
-
-        socket.on('ranking_data', function (data) {
-            console.log("Received ranking_data:", data); // デバッグ用ログ
-            // ランキングリストを更新
-            var rankingList = document.getElementById('ranking-list');
-            rankingList.innerHTML = '';
-            data.death_order.forEach(function (playerName) {
-                var li = document.createElement('li');
-                li.textContent = playerName;
-                rankingList.appendChild(li);
-            });
-        });
-    </script>
 </body>
+
 </html>
