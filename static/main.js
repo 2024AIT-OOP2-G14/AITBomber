@@ -222,6 +222,11 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0], // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1] - r, // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
                     } else {
                         break
                     }
@@ -237,6 +242,11 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0], // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1] + r, // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
                     } else {
                         break
                     }
@@ -252,6 +262,11 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0] - r, // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1], // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
                     } else {
                         break
                     }
@@ -267,6 +282,11 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0] + r, // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1], // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
                     } else {
                         break
                     }
