@@ -27,16 +27,16 @@
                         <input type="hidden" name="roomid" value="{{ room_id }}">
                     </div>
                     <div id="inputgroup">
-                            <label class="inputlabel" for="roomname">ルーム名入力</label>
-                            <div class="inputtext">
-                                <input class="inputtext" type="text" name="roomname" placeholder="ルーム名" required>
-                            </div>
-                        <div>
-                            <label class="inputlabel" for="playername">名前入力</label>
-                            <div class="inputtext">
-                                <input class="inputtext" type="text" name="playername" placeholder="プレイヤー名" required>
-                            </div>
+                        <label class="inputlabel" for="roomname">ルーム名入力</label>
+                        <div class="inputtext">
+                            <input class="inputtext" type="text" name="roomname" placeholder="ルーム名" required>
                         </div>
+
+                        <label class="inputlabel" for="playername">名前入力</label>
+                        <div class="inputtext">
+                            <input class="inputtext" type="text" name="playername" placeholder="プレイヤー名" required>
+                        </div>
+
                     </div>
                     <div id="buttongroup">
                         <a href="{{ url_for('index') }}">戻る</a>

@@ -6,30 +6,31 @@ h2{
     position:relative;
 }
 
-h2 form{
-    display: flexbox;
+.inputgroup {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
 }
 
-#buckbtn{
-    list-style: none; /* デフォルトのリストスタイルを削除 */
+.inputlabel {
+    display: flex;
+    justify-content: center;
+    /* display: block; */
+    margin-bottom: 1px;
+    font-size: 32px;
 }
 
-#buckbtn li a{
-    text-decoration: none; /* 下線を削除 */
-    color: #333; /* 任意のテキストカラー */
-    background-color:#e6e6e6;
-    font-size: 30px; /* 任意のフォントサイズ */
-    padding: 10px 20px;
-    border: 2px solid #333; /* 任意のボーダー */
-    border-radius: 5px; /* ボタンの角を丸める */
-    display: inline-block; /* リンクをボタン風にする */
-    transition: 0.3s; /* ホバー時のエフェクト */
-}
-
-#buckbtn li a:hover {
-    background-color: #333; /* 背景色の変更 */
-    color: #fff; /* テキストカラーの変更 */
-    border-color: #fff; /* ボーダーカラーの変更 */
+.inputtext {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+    font-size: 32px;
+    /* width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box; */
 }
 
 #joinRoomButton {
@@ -45,6 +46,31 @@ h2 form{
 }
 
 #joinRoomButton:hover{
+    background-color: #333; /* 背景色の変更 */
+    color: #fff; /* テキストカラーの変更 */
+    border-color: #fff; /* ボーダーカラーの変更 */
+}
+
+#buttongroup{
+    list-style: none; /* デフォルトのリストスタイルを削除 */
+    display: flex;
+    padding: 5% 10%;
+    justify-content: space-between;
+}
+
+#buttongroup a{
+    text-decoration: none; /* 下線を削除 */
+    color: #333; /* 任意のテキストカラー */
+    background-color:#e6e6e6;
+    font-size: 30px; /* 任意のフォントサイズ */
+    padding: 10px 20px;
+    border: 2px solid #333; /* 任意のボーダー */
+    border-radius: 5px; /* ボタンの角を丸める */
+    display: inline-block; /* リンクをボタン風にする */
+    transition: 0.3s; /* ホバー時のエフェクト */
+}
+
+#buttongroup a:hover {
     background-color: #333; /* 背景色の変更 */
     color: #fff; /* テキストカラーの変更 */
     border-color: #fff; /* ボーダーカラーの変更 */

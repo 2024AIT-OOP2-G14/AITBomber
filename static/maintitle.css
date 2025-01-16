@@ -1,5 +1,6 @@
 h1{
-    border:solid 1px #f00; /* 枠線追加 */
+    border:solid 3px rgb(8, 8, 8); /* 枠線追加 */
+    border-radius: 5px; /* ボタンの角を丸める */
     font-size: 5em;
     margin:auto;
     width:70%;
