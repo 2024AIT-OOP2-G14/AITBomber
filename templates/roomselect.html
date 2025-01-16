@@ -4,7 +4,7 @@
 <head>
     <title>ルーム選択|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/roomselect.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
 </head>
 
@@ -14,7 +14,7 @@
         <!-- ルーム選択 -->
         <div class="selectroom">
             <section>
-                <h1>ルーム選択</h1>
+                <h2>ルーム選択</h2>
                 <form action="{{ url_for('roomselect') }}" method="post">
                     <div id="inputgroup">
                         <label class="inputlabel" for="playername">プレイヤー名:</label>
