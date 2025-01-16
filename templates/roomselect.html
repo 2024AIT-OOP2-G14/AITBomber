@@ -16,25 +16,28 @@
             <section>
                 <h2>ルーム選択</h2>
                 <form action="{{ url_for('roomselect') }}" method="post">
-                    <label>
-                        プレイヤー名:
-                        <input type="text" name="playername" placeholder="プレイヤー名" required>
-                    </label>
-                    <label>
-                        ルーム選択:
-                        <select name="room_id" required>
-                            {% for room_id, room_data in rooms.items() %}
-                            <option value="{{ room_id }}">{{ room_data['name'] }} (ID: {{ room_id }})</option>
-                            {% endfor %}
-                        </select>
-                    </label>
-                    <button type="submit">参加</button>
+                    <div id="inputgroup">
+                        <label class="inputlabel" for="playername">プレイヤー名:</label>
+                        <div class="inputtext">
+                            <input class="inputtext" type="text" name="playername" placeholder="プレイヤー名" required>
+                        </div>
+                        <label class="inputlabel" for="roomselect">ルーム選択:</label>
+                        <div class="inputtext">
+                            <select class="inputtext" name="room_id" required>
+                                {% for room_id, room_data in rooms.items() %}
+                                <option value="{{ room_id }}">{{ room_data['name'] }} (ID: {{ room_id }})</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div id="buttongroup">
+                        <a href="{{ url_for('index') }}">戻る</a>
+                        <button id="joinRoomButton" type="submit">参加</button>
+                    </div>
+
                 </form>
             </section>
         </div>
-        <ul id="buckbtn">
-            <li><a href="{{ url_for('index') }}">戻る</a></li>
-        </ul>
     </main>
 </body>
 

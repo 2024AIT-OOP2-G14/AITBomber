@@ -20,16 +20,23 @@ function joinRoom(roomId, playerName) {
 }
 
 // リアルタイムでルーム情報を更新
-socket.on('update_room', (room) => {
+socket.on('update_room', (room,countn) => {
     // `<section id="update_room">` を取得
     const updateRoomSection = document.getElementById('update_room');
+    console.log(`確認: countn=${countn}`);
     // room オブジェクトが正しく受信されたか確認
     if (room && Array.isArray(room.players)) {
         // プレイヤーリストを生成
         const playersList = room.players.map(player => `<li>${player}</li>`).join('');
-
         // セクション内のHTMLを更新
         updateRoomSection.innerHTML = playersList;
+        //ここでfor文で４引く参加人数で募集中を表示
+
+        for(i=0;i<4 - countn;i++){
+            updateRoomSection.insertAdjacentHTML('beforeend','tyuudesu');
+        }
+
+        //ここになんか追加
     } else {
         // データが正しくない場合の表示
         updateRoomSection.innerHTML = '<p>プレイヤー情報を取得できませんでした。</p>';

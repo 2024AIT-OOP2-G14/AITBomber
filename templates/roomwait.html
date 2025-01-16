@@ -18,10 +18,10 @@
             <h1 id="title">プレイヤー待機中</h1>
             <section id="room-info">
 
-                <p>ルームID: <strong>{{ room_id }}</strong></p>
-                <p>ルーム名: {{ room['name'] }}</p>
-                <p>ホスト: {{ room['host'] }}</p>
-                <p>ルール: {{ room['rule'] }}</p>
+                <p id="roomID">ルームID: <strong>{{ room_id }}</strong></p>
+                <p id="roomname">ルーム名: {{ room['name'] }}</p>
+                <p id="host">ホスト: {{ room['host'] }}</p>
+                <!-- <p id="gamerule">ルール: {{ room['rule'] }}</p> -->
             </section>
 
             <h2 id="member">参加者</h2>
@@ -29,6 +29,9 @@
             <section id="update_room">
                 {% for player in room['players'] %}
                 <li>{{ player }}</li>
+                {% endfor %}
+                {% for i in range(10) %}
+                <li>{{i+1}}</li>
                 {% endfor %}
             </section>          
             {% if playername == room['host'] %}
