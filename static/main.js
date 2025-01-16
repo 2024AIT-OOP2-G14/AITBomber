@@ -189,7 +189,7 @@ function draw() {
                 //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく
                 //左
                 for (var r = 1; r <= player[h].blastRange[i][0]; r++) {
-                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 0) {
+                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 0 || map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 3) {
                         g.drawImage(blast, (player[h].blastYX[i][1] - r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
                         //死亡判定
                         if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[h].blastYX[i][1] - r) {
@@ -204,7 +204,7 @@ function draw() {
                 }
                 //右
                 for (var r = 1; r <= player[h].blastRange[i][1]; r++) {
-                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 0) {
+                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 0 || map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 3) {
                         g.drawImage(blast, (player[h].blastYX[i][1] + r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
                         //死亡判定
                         if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1] + r) {
@@ -219,7 +219,7 @@ function draw() {
                 }
                 //上
                 for (var r = 1; r <= player[h].blastRange[i][2]; r++) {
-                    if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 0) {
+                    if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 0 || map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 3) {
                         g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] - r) * squareSize, squareSize, squareSize)
                         //死亡判定
                         if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] - r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
@@ -234,7 +234,7 @@ function draw() {
                 }
                 //下
                 for (var r = 1; r <= player[h].blastRange[i][3]; r++) {
-                    if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 0) {
+                    if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 0 || map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 3) {
                         g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] + r) * squareSize, squareSize, squareSize)
                         //死亡判定
                         if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] + r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
