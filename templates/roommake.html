@@ -6,7 +6,6 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="../static/roommake.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
-    <script defer src="/static/roommake.js"></script>
 </head>
 
 <body>
@@ -21,7 +20,7 @@
         <div class="makeroom">
             <section id="create-room-section">
                 <form action="{{ url_for('roommake') }}" method="post">
-                    <input type="hidden" name="roomid" value="{{ room_id }}">
+                    <input type="hidden" name="room_id" value="{{ room_id }}">
                     <label>
                         プレイヤー名:
                         <input type="text" name="playername" placeholder="プレイヤー名" required>
