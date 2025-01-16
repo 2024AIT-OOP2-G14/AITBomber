@@ -92,10 +92,13 @@ socket.on('mapchanger', (data) => {
 });
 
 socket.on('playerReceiver', (playerData) => {
-    player[playerData.gN].gX = playerData.gX;
-    player[playerData.gN].gY = playerData.gY;
-    player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
-    player[playerData.gN].blastRange = structuredClone(playerData.blastRange)
+    if(playerData.gN != myN) {
+        player[playerData.gN].gX = playerData.gX;
+        player[playerData.gN].gY = playerData.gY;
+        player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
+        player[playerData.gN].blastRange = structuredClone(playerData.blastRange)
+        console.log(playerData.gN)
+    }
 });
 
 
@@ -182,7 +185,7 @@ function draw() {
             if (player[h].blastYX[i].length != 0) {
                 g.drawImage(blast, player[h].blastYX[i][1] * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
                 //死亡判定
-                if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                if (Math.round(player[h].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
                     player[myN].operable = 0;
                 }
 
@@ -192,7 +195,7 @@ function draw() {
                     if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 0) {
                         g.drawImage(blast, (player[h].blastYX[i][1] - r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
                         //死亡判定
-                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[h].blastYX[i][1] - r) {
+                        if (Math.round(player[h].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[h].blastYX[i][1] - r) {
                             player[myN].operable = 0;
                         }
                         //壊れる壁なら消す
@@ -207,7 +210,7 @@ function draw() {
                     if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 0) {
                         g.drawImage(blast, (player[h].blastYX[i][1] + r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
                         //死亡判定
-                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1] + r) {
+                        if (Math.round(player[h].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1] + r) {
                             player[myN].operable = 0;
                         }
                         //壊れる壁なら消す
@@ -222,7 +225,7 @@ function draw() {
                     if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 0) {
                         g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] - r) * squareSize, squareSize, squareSize)
                         //死亡判定
-                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] - r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                        if (Math.round(player[h].gY / squareSize) == player[myN].blastYX[i][0] - r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
                             player[myN].operable = 0;
                         }
                         //壊れる壁なら消す
@@ -237,7 +240,7 @@ function draw() {
                     if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 0) {
                         g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] + r) * squareSize, squareSize, squareSize)
                         //死亡判定
-                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] + r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                        if (Math.round(player[h].gY / squareSize) == player[myN].blastYX[i][0] + r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
                             player[myN].operable = 0;
                         }
                         //壊れる壁なら消す
