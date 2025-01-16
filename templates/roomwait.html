@@ -4,7 +4,7 @@
 <head>
     <title>プレイヤー待機中|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="../static/roomwait.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
     <script src="../static/socket.js"></script>
     <script defer src="../static/game.js"></script>
@@ -37,6 +37,7 @@
             {% if playername == room['host'] %}
              <button id="startGameButton">PLAY</button>
             {% endif %}
+            <a id="startGameButton" href="{{ url_for('game') }}">PLAY(開発用)</a>
     </main>
 </body>
 
