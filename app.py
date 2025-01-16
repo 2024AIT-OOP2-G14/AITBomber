@@ -41,21 +41,15 @@ def roomselect():
 
 @app.route('/roommake', methods=['GET', 'POST'])
 def roommake():
-    if request.method == 'GET':
-        # `room_id` を一回だけ生成してセッションに保存
-        room_id = str(uuid.uuid4())[:8]
-        session['room_id'] = room_id
-        return render_template('roommake.html', room_id=room_id)
 
+    room_id = str(uuid.uuid4())[:8]
     if request.method == 'POST':
         playername = request.form.get('playername')
         roomname = request.form.get('roomname')
-        rule = request.form.get('rule')
         room_id = request.form.get('room_id')  # HTML から取得
-        if not playername or not roomname or not rule:
+        if not playername or not roomname:
             logging.warning("入力エラー: 必要な情報が不足しています")
             return redirect(url_for('roomselect'))
-
         # 新しいルームを作成
         rooms[room_id] = {
             'name': roomname,
@@ -65,7 +59,7 @@ def roommake():
         logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
         # room_id と playername をクエリパラメータとして渡す
         return redirect(url_for('roomwait', room_id=room_id, playername=playername))
-
+    return render_template('roommake.html', room_id=room_id)
 
 @app.route('/roomwait', methods=['GET', 'POST'])
 def roomwait():
