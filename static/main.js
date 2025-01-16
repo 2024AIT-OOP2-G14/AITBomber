@@ -34,20 +34,12 @@ const blast = document.createElement('img');
 let nowisIW = false
 
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
-switch (myN) {
-    case 0:
-        var me = new Player(myN, squareSize, squareSize);
-        break;
-    case 1:
-        var me = new Player(myN, WIDTH - 2 * squareSize, squareSize);
-        break;
-    case 2:
-        var me = new Player(myN, squareSize, HEIGHT - 2 * squareSize);
-        break;
-    case 3:
-        var me = new Player(myN, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize);
-        break;
-}
+let player = [];
+
+player.push(new Player(0, squareSize, squareSize));
+player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
+player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
 
 let rWidth = squareSize;         // 任意の数を入れることで、プレイヤーの大きさが決定される
 let rHeight;
@@ -95,12 +87,15 @@ socket.on('maploader', (bombermap) => {
 });
 
 socket.on('mapchanger', (data) => {
-    const { cx, cy, mapData } = data; // 受け取ったデータを展開
-    map.bombermap[cx][cy] = mapData;  // マップを更新
+    const { cy, cx, mapData } = data; // 受け取ったデータを展開
+    map.bombermap[cy][cx] = mapData;  // マップを更新
 });
 
 socket.on('playerReceiver', (playerData) => {
-    me[playerData.gN] = playerData;
+    player[playerData.gN].gX = playerData.gX;
+    player[playerData.gN].gY = playerData.gY;
+    player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
+    player[playerData.gN].blastRange = structuredClone(playerData.blastRange)
 });
 
 
@@ -120,28 +115,27 @@ function onPaint() {
         //60fpsよりフレームレートが低い環境では、時間関連のイベントが複数回行われるようにします。（60fpsで動かす想定なので、30fpsの環境では移動処理が二度行われます。）
         while (gTimer + 16.67 < performance.now()) {
             gTimer += 16.67;
-            if (me.operable) {
+            if (player[myN].operable) {
                 //今埋まっているか調べる
-                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) {
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) {
                     nowisIW = true
                 }
-                me.gX -= gKey[65] * me.gS;    //g[65]=1（aキーが押し込まれた）
-                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gX += gKey[65] * me.gS } //ダメならもどす
+                player[myN].gX -= gKey[65] * player[myN].gS;    //g[65]=1（aキーが押し込まれた）
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gX += gKey[65] * player[myN].gS } //ダメならもどす
 
-                me.gX += gKey[68] * me.gS;
-                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gX -= gKey[68] * me.gS }
+                player[myN].gX += gKey[68] * player[myN].gS;
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gX -= gKey[68] * player[myN].gS }
 
-                me.gY -= gKey[87] * me.gS;
-                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gY += gKey[87] * me.gS }
+                player[myN].gY -= gKey[87] * player[myN].gS;
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gY += gKey[87] * player[myN].gS }
 
-                me.gY += gKey[83] * me.gS;
-                if (map.isInsideWall(me.gX, me.gY, nowisIW, map.bombermap)) { me.gY -= gKey[83] * me.gS }
+                player[myN].gY += gKey[83] * player[myN].gS;
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gY -= gKey[83] * player[myN].gS }
                 //値を戻す
                 nowisIW = false
             }
             //タイマー進める
-            //console.log('player.bTimer(): ', me.bTimer());
-            me.bTimer();
+            player[myN].bTimer();
         }
 
         //スペースキーが押し込まれたらボムを置く
@@ -149,8 +143,8 @@ function onPaint() {
             spaceTime--;
         }
 
-        if (me.operable && gKey[32] == 1 && spaceTime == 0) {
-            me.setBomb();
+        if (player[myN].operable && gKey[32] == 1 && spaceTime == 0) {
+            player[myN].setBomb();
             spaceTime = spaceKeyRecharge;
         }
 
@@ -167,6 +161,8 @@ function draw() {
     g.fillStyle = "#006400";
     g.fillRect(squareSize, squareSize, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize);
 
+    socket.emit('send_player', player[myN]);
+
     //壁or爆弾の描画
     for (var i = 0; i < hblock; i++) {
         for (var j = 0; j < wblock; j++) {
@@ -174,100 +170,102 @@ function draw() {
                 g.drawImage(kabe, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 2) {
                 g.drawImage(breakabe, j * squareSize, i * squareSize, squareSize, squareSize)
-            } else if (me.existBomb(i, j)) {
+            } else if (map.bombermap[i][j] == 3) {
                 g.drawImage(bomb, j * squareSize, i * squareSize, squareSize, squareSize)
             }
         }
     }
 
     //爆発の描画
-    for (var i = 0; i < me.bLimit; i++) {
-        if (me.blastYX[i].length != 0) {
-            g.drawImage(blast, me.blastYX[i][1] * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
-            //死亡判定
-            if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
-                me.operable = 0;
-            }
+    for(var h = 0; h < 4; h++) {
+        for (var i = 0; i < player[h].bLimit; i++) {
+            if (player[h].blastYX[i].length != 0) {
+                g.drawImage(blast, player[h].blastYX[i][1] * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
+                //死亡判定
+                if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                    player[myN].operable = 0;
+                }
 
-            //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく
-            //左
-            for (var r = 1; r <= me.blastRange[i][0]; r++) {
-                if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] == 0) {
-                    g.drawImage(blast, (me.blastYX[i][1] - r) * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
-                    //死亡判定
-                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1] - r) {
-                        me.operable = 0;
+                //ボムの爆風の長さの限り上下左右に爆風が伸びてゆく
+                //左
+                for (var r = 1; r <= player[h].blastRange[i][0]; r++) {
+                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 0) {
+                        g.drawImage(blast, (player[h].blastYX[i][1] - r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
+                        //死亡判定
+                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[h].blastYX[i][1] - r) {
+                            player[myN].operable = 0;
+                        }
+                        //壊れる壁なら消す
+                    } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 2) {
+                        map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0], // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1] - r, // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
+                    } else {
+                        break
                     }
-                    //壊れる壁なら消す
-                } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] == 2) {
-                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] - r] = 0
-                    socket.emit('changes_map', {
-                        cx: me.blastYX[i][0], // 変更したマスの x 座標
-                        cy: me.blastYX[i][1] - r, // 変更したマスの y 座標
-                        mapData: 0 // そのマスの新しい値
-                    });
-                } else {
-                    break
                 }
-            }
-            //右
-            for (var r = 1; r <= me.blastRange[i][1]; r++) {
-                if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] == 0) {
-                    g.drawImage(blast, (me.blastYX[i][1] + r) * squareSize, me.blastYX[i][0] * squareSize, squareSize, squareSize)
-                    //死亡判定
-                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] && Math.round(me.gX / squareSize) == me.blastYX[i][1] + r) {
-                        me.operable = 0;
+                //右
+                for (var r = 1; r <= player[h].blastRange[i][1]; r++) {
+                    if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 0) {
+                        g.drawImage(blast, (player[h].blastYX[i][1] + r) * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
+                        //死亡判定
+                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1] + r) {
+                            player[myN].operable = 0;
+                        }
+                        //壊れる壁なら消す
+                    } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 2) {
+                        map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0], // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1] + r, // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
+                    } else {
+                        break
                     }
-                    //壊れる壁なら消す
-                } else if (map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] == 2) {
-                    map.bombermap[me.blastYX[i][0]][me.blastYX[i][1] + r] = 0
-                    socket.emit('changes_map', {
-                        cx: me.blastYX[i][0], // 変更したマスの x 座標
-                        cy: me.blastYX[i][1] + r, // 変更したマスの y 座標
-                        mapData: 0 // そのマスの新しい値
-                    });
-                } else {
-                    break
                 }
-            }
-            //上
-            for (var r = 1; r <= me.blastRange[i][2]; r++) {
-                if (map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] == 0) {
-                    g.drawImage(blast, me.blastYX[i][1] * squareSize, (me.blastYX[i][0] - r) * squareSize, squareSize, squareSize)
-                    //死亡判定
-                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] - r && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
-                        me.operable = 0;
+                //上
+                for (var r = 1; r <= player[h].blastRange[i][2]; r++) {
+                    if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 0) {
+                        g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] - r) * squareSize, squareSize, squareSize)
+                        //死亡判定
+                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] - r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                            player[myN].operable = 0;
+                        }
+                        //壊れる壁なら消す
+                    } else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 2) {
+                        map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0] - r, // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1], // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
+                    } else {
+                        break
                     }
-                    //壊れる壁なら消す
-                } else if (map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] == 2) {
-                    map.bombermap[me.blastYX[i][0] - r][me.blastYX[i][1]] = 0
-                    socket.emit('changes_map', {
-                        cx: me.blastYX[i][0] - r, // 変更したマスの x 座標
-                        cy: me.blastYX[i][1], // 変更したマスの y 座標
-                        mapData: 0 // そのマスの新しい値
-                    });
-                } else {
-                    break
                 }
-            }
-            //下
-            for (var r = 1; r <= me.blastRange[i][3]; r++) {
-                if (map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] == 0) {
-                    g.drawImage(blast, me.blastYX[i][1] * squareSize, (me.blastYX[i][0] + r) * squareSize, squareSize, squareSize)
-                    //死亡判定
-                    if (Math.round(me.gY / squareSize) == me.blastYX[i][0] + r && Math.round(me.gX / squareSize) == me.blastYX[i][1]) {
-                        me.operable = 0;
+                //下
+                for (var r = 1; r <= player[h].blastRange[i][3]; r++) {
+                    if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 0) {
+                        g.drawImage(blast, player[h].blastYX[i][1] * squareSize, (player[h].blastYX[i][0] + r) * squareSize, squareSize, squareSize)
+                        //死亡判定
+                        if (Math.round(player[myN].gY / squareSize) == player[myN].blastYX[i][0] + r && Math.round(player[myN].gX / squareSize) == player[myN].blastYX[i][1]) {
+                            player[myN].operable = 0;
+                        }
+                        //壊れる壁なら消す
+                    } else if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 2) {
+                        map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] = 0
+                        socket.emit('changes_map', {
+                            cy: player[h].blastYX[i][0] + r, // 変更したマスの y 座標
+                            cx: player[h].blastYX[i][1], // 変更したマスの x 座標
+                            mapData: 0 // そのマスの新しい値
+                        });
+                    } else {
+                        break
                     }
-                    //壊れる壁なら消す
-                } else if (map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] == 2) {
-                    map.bombermap[me.blastYX[i][0] + r][me.blastYX[i][1]] = 0
-                    socket.emit('changes_map', {
-                        cx: me.blastYX[i][0] + r, // 変更したマスの x 座標
-                        cy: me.blastYX[i][1], // 変更したマスの y 座標
-                        mapData: 0 // そのマスの新しい値
-                    });
-                } else {
-                    break
                 }
             }
         }
@@ -291,7 +289,7 @@ function draw() {
         }
     };
 
-    sendOperable(me.operable);  // myN の後に sendOperable を呼び出す
+    sendOperable(player[myN].operable);  // myN の後に sendOperable を呼び出す
 
 
     socket.on('game_end', (data) => {
@@ -308,28 +306,28 @@ function draw() {
         location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
     });
 
-    //自分の情報を送る
-    //socket.emit('send_player', me);
-
-
     //プレイヤー描画
-    if (me.operable) {
-        user.style.left = me.gX;
-        user.style.top = me.gY;
-        g.drawImage(user, me.gX, me.gY, rWidth, rHeight);
-        g.fillStyle = "#ffffff";
-        g.textAlign = 'center';
-        g.fillText(me.name, me.gX + squareSize / 2, me.gY);
+    for (var i = 0; i < 4; i++){
+        if (player[i].operable) {
+            user.style.left = player[i].gX;
+            user.style.top = player[i].gY;
+            
+            g.drawImage(user, player[i].gX, player[i].gY, rWidth, rHeight);
+            g.fillStyle = "#ffffff";
+            g.textAlign = 'center';
+            g.fillText(player[i].name, player[i].gX + squareSize / 2, player[i].gY);
+        }
     }
 
 }
+
 const sendOperable = (operable) => {
     socket.emit('operable', {
         operable: operable,countmyN:countmyN
     });
 };
-if(me.operable==0){
-    console.log(`me.operable=${me.operable}`);
+if(player[myN].operable==0){
+    console.log(`me.operable=${player[myN].operable}`);
     sendOperable(0);  // myN の後に sendOperable を呼び出す
 }
 
