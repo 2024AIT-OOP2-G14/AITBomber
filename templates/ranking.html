@@ -1,24 +1,45 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
     <title>ランキング|AITボンバー</title>
     <meta charset="utf-8">
-    <link rel="stylesheet" href=".css">
-</head>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.min.js"></script>
+
+    <!-- <link rel="stylesheet" href=".css"> -->
+
+</head>
 <body>
     <main>
         <h1>ランキング</h1>
-        <p>score:660</p>
-        <ol>
-            <li>かまたく キル数:100</li>
-            <li>しばいぬ キル数:1</li>
-            <li>さとゆう キル数:0</li>
+        <ol id="ranking-list">
+
+            {% if death_order.get(room_id) %}
+            {% for player in death_order[room_id] | reverse %}
+                <li>{{ player }}</li>
+            {% endfor %}
+        {% else %}
+            <li>ランキングデータがありません。</li>
+        {% endif %}
         </ol>
-        <a href="index.html">タイトルに戻る</a>
+        <a href="{{ url_for('index') }}">タイトルに戻る</a>
 
     </main>
-</body>
 
+    <script>
+        var socket = io();
+
+        socket.on('ranking_data', function (data) {
+            console.log("Received ranking_data:", data); // デバッグ用ログ
+            // ランキングリストを更新
+            var rankingList = document.getElementById('ranking-list');
+            rankingList.innerHTML = '';
+            data.death_order.forEach(function (playerName) {
+                var li = document.createElement('li');
+                li.textContent = playerName;
+                rankingList.appendChild(li);
+            });
+        });
+    </script>
+</body>
 </html>
