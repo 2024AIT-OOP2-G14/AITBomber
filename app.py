@@ -40,15 +40,14 @@ def roommake():
     if request.method == 'POST':
         playername = request.form.get('playername')
         roomname = request.form.get('roomname')
-        rule = request.form.get('rule')
-        if not playername or not roomname or not rule:
+        #rule = request.form.get('rule')
+        if not playername or not roomname:
             logging.warning("入力エラー: 必要な情報が不足しています")
             return redirect(url_for('roomselect'))
 
         # 新しいルームを作成
         rooms[room_id] = {
             'name': roomname,
-            'rule': rule,
             'host': playername,
             'players': [playername],
         }
@@ -106,7 +105,9 @@ def handle_join_room(data):
     # プレイヤーをルームに追加
     join_room(room_id)
     # ルーム全員にルーム情報を送信
-    emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id)
+    countn=0
+    +countn
+    emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id, countN=countn)
 
 
 @socketio.on('start_game')
