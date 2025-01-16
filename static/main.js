@@ -37,7 +37,7 @@ let nowisIW = false
 let player = [];
 
 player.push(new Player(0, squareSize, squareSize));
-player.push(new Player(1,  WIDTH - 2 * squareSize, squareSize));
+player.push(new Player(1, WIDTH - 2 * squareSize, squareSize));
 player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
 player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
 
@@ -92,7 +92,7 @@ socket.on('mapchanger', (data) => {
 });
 
 socket.on('playerReceiver', (playerData) => {
-    if(playerData.gN != myN) {
+    if (playerData.gN != myN) {
         player[playerData.gN].gX = playerData.gX;
         player[playerData.gN].gY = playerData.gY;
         player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
@@ -180,7 +180,7 @@ function draw() {
     }
 
     //爆発の描画
-    for(var h = 0; h < 4; h++) {
+    for (var h = 0; h < countmyN; h++) {
         for (var i = 0; i < player[h].bLimit; i++) {
             if (player[h].blastYX[i].length != 0) {
                 g.drawImage(blast, player[h].blastYX[i][1] * squareSize, player[h].blastYX[i][0] * squareSize, squareSize, squareSize)
@@ -290,11 +290,11 @@ function draw() {
     });
 
     //プレイヤー描画
-    for (var i = 0; i < 4; i++){
+    for (var i = 0; i < countmyN; i++) {
         if (player[i].operable) {
             user.style.left = player[i].gX;
             user.style.top = player[i].gY;
-            
+
             g.drawImage(user, player[i].gX, player[i].gY, rWidth, rHeight);
             g.fillStyle = "#ffffff";
             g.textAlign = 'center';
@@ -306,10 +306,10 @@ function draw() {
 
 const sendOperable = (operable) => {
     socket.emit('operable', {
-        operable: operable,countmyN:countmyN
+        operable: operable, countmyN: countmyN
     });
 };
-if(player[myN].operable==0){
+if (player[myN].operable == 0) {
     console.log(`me.operable=${player[myN].operable}`);
     sendOperable(0);  // myN の後に sendOperable を呼び出す
 }
@@ -321,7 +321,7 @@ socket.on('game_end', (data) => {
 
     // 'game_end' から取得したデータ（ここではoperableN）をログに出力
     console.log(`operableN: ${data.operableN}`);
-    
+
     // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
     location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
 });
