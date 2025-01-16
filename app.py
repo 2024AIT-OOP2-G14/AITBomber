@@ -59,7 +59,6 @@ def roommake():
         # 新しいルームを作成
         rooms[room_id] = {
             'name': roomname,
-            'rule': rule,
             'host': playername,
             'players': [playername],
         }
@@ -120,7 +119,9 @@ def handle_join_room(data):
     # プレイヤー自身に番号を送信
     emit('assign_number', {'myN': myN}, room=request.sid)
     # ルーム全員にルーム情報を送信
-    emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id)
+    countn=0
+    +countn
+    emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id, countN=countn)
 
 
 @socketio.on('start_game')
@@ -216,6 +217,21 @@ def operable(data):
 @socketio.on('save_map')
 def server_echo(bombermap) :
     emit('maploader',bombermap,broadcast=True)
+
+
+#マップの変更点を送る
+@socketio.on('changes_map')
+def change(data):
+    cy = data.get('cy')
+    cx = data.get('cx')
+    mapData = data.get('mapData')
+
+    emit('mapchanger', {'cy': cy, 'cx': cx, 'mapData': mapData}, broadcast=True)
+
+ #プレイヤー情報を送る
+@socketio.on('send_player')
+def send(playerData):
+    emit('playerReceiver', playerData, broadcast=True)
 
 @app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
 def ranking():

@@ -11,37 +11,39 @@
 <body>
     <main>
         <h1>ルーム作成</h1>
-        {% if room_id %}
-        <p>ルームID: <strong>{{ room_id }}</strong></p>
-        {% else %}
-        <p>ルームID: 未作成</p>
-        {% endif %}
+        <div class="roomid">
+            {% if room_id %}
+            <p>ルームID: <strong>{{ room_id }}</strong></p>
+            {% else %}
+            <p>ルームID: 未作成</p>
+            {% endif %}
+        </div>
         <!-- ルーム作成 -->
         <div class="makeroom">
             <section id="create-room-section">
                 <form action="{{ url_for('roommake') }}" method="post">
-                    <input type="hidden" name="room_id" value="{{ room_id }}">
-                    <label>
-                        プレイヤー名:
-                        <input type="text" name="playername" placeholder="プレイヤー名" required>
-                    </label>
-                    <label>
-                        ルーム名:
-                        <input type="text" name="roomname" placeholder="ルーム名" required>
-                    </label>
-                    <fieldset>
-                        <legend>ルール選択</legend>
-                        <label><input type="radio" name="rule" value="デスマッチ" required> デスマッチ</label>
-                        <label><input type="radio" name="rule" value="サバイバル" required> サバイバル</label>
-                        <label><input type="radio" name="rule" value="ボンバーマン" required> ボンバーマン</label>
-                    </fieldset>
-                    <button id="joinRoomButton" type="submit">作成</button>
+                    <div>
+                        <input type="hidden" name="room_id" value="{{ room_id }}">
+                    </div>
+                    <div id="inputgroup">
+                        <label class="inputlabel" for="roomname">ルーム名入力</label>
+                        <div class="inputtext">
+                            <input class="inputtext" type="text" name="roomname" placeholder="ルーム名" required>
+                        </div>
+
+                        <label class="inputlabel" for="playername">名前入力</label>
+                        <div class="inputtext">
+                            <input class="inputtext" type="text" name="playername" placeholder="プレイヤー名" required>
+                        </div>
+
+                    </div>
+                    <div id="buttongroup">
+                        <a href="{{ url_for('index') }}">戻る</a>
+                        <button id="joinRoomButton" type="submit">作成</button>
+                    </div>
                 </form>
             </section>
         </div>
-        <ul id="buckbtn">
-            <li><a href="{{ url_for('index') }}">戻る</a></li>
-        </ul>
     </main>
 </body>
 

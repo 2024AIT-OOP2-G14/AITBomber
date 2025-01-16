@@ -1,21 +1,42 @@
-body {
-    margin: 0;
-    padding: 0;
+h2{
+    font-size: 5em;
+    margin:auto;
+    width:70%;
+    text-align: center;
+    position:relative;
+}
+
+.inputgroup {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+}
+
+.inputlabel {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 80vh; /* ビューポートの高さを100%に設定 */
-    font-size: 30px;
-    background-color: #f4f4f4; /* 任意の背景色 */
+    /* display: block; */
+    margin-bottom: 1px;
+    font-size: 32px;
 }
 
-#buckbtn{
-    list-style: none; /* デフォルトのリストスタイルを削除 */
+.inputtext {
+    display: flex; /* Flexboxを有効化 */
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+    font-size: 32px;
+    /* width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    border: 1px solid #000;
+    border-radius: 5px;
+    box-sizing: border-box; */
 }
 
-#buckbtn li a{
+#joinRoomButton {
     text-decoration: none; /* 下線を削除 */
     color: #333; /* 任意のテキストカラー */
+    background-color:#e6e6e6;
     font-size: 30px; /* 任意のフォントサイズ */
     padding: 10px 20px;
     border: 2px solid #333; /* 任意のボーダー */
@@ -24,7 +45,32 @@ body {
     transition: 0.3s; /* ホバー時のエフェクト */
 }
 
-#buckbtn li a:hover {
+#joinRoomButton:hover{
+    background-color: #333; /* 背景色の変更 */
+    color: #fff; /* テキストカラーの変更 */
+    border-color: #fff; /* ボーダーカラーの変更 */
+}
+
+#buttongroup{
+    list-style: none; /* デフォルトのリストスタイルを削除 */
+    display: flex;
+    padding: 5% 10%;
+    justify-content: space-between;
+}
+
+#buttongroup a{
+    text-decoration: none; /* 下線を削除 */
+    color: #333; /* 任意のテキストカラー */
+    background-color:#e6e6e6;
+    font-size: 30px; /* 任意のフォントサイズ */
+    padding: 10px 20px;
+    border: 2px solid #333; /* 任意のボーダー */
+    border-radius: 5px; /* ボタンの角を丸める */
+    display: inline-block; /* リンクをボタン風にする */
+    transition: 0.3s; /* ホバー時のエフェクト */
+}
+
+#buttongroup a:hover {
     background-color: #333; /* 背景色の変更 */
     color: #fff; /* テキストカラーの変更 */
     border-color: #fff; /* ボーダーカラーの変更 */
