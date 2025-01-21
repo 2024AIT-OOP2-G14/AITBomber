@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, session, url_for, send_from_directory
 from flask_socketio import SocketIO, join_room, leave_room, emit
-import time
 import uuid  # UUIDを生成するモジュール
 import sys
 import logging
@@ -35,7 +34,13 @@ def roomselect():
         #logging.info(f"ルーム作成: {rooms[room_id]}")  # 確認用
         #logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
 
-        # room_id と playername をクエリパラメータとして渡す
+        # 同じ名前のプレイヤーチェック
+        if playername in rooms[room_id]['players']:
+            return render_template(
+                'roomselect.html',
+                rooms=rooms,
+                error=f"プレイヤー名 {playername} は既に使用されています。別の名前を選んでください。"
+            )
         return redirect(url_for('roomwait', room_id=room_id, playername=playername))
     return render_template('roomselect.html', rooms=rooms)
 
@@ -57,7 +62,6 @@ def roommake():
             'players': [playername],
         }
         logging.info(f"Received playername: {playername}, room_id: {room_id}")  # 確認用
-        # room_id と playername をクエリパラメータとして渡す
         return redirect(url_for('roomwait', room_id=room_id, playername=playername))
     return render_template('roommake.html', room_id=room_id)
 
@@ -99,22 +103,17 @@ def handle_join_room(data):
     if not room_id or room_id not in rooms:
         emit('error', {'message': '不正なルームIDです'})
         return
-
-    # プレイヤーが既にリストに含まれていない場合のみ追加
+    
+        # プレイヤーが既にリストに含まれていない場合のみ追加
     if playername not in rooms[room_id]['players']:
         rooms[room_id]['players'].append(playername)
-    
-    # プレイヤー番号 (myN) を割り振る
-    myN = rooms[room_id]['players'].index(playername)
+        # プレイヤー名とセッションIDを紐付け
+        rooms[room_id].setdefault('sessions', {})[request.sid] = playername
 
     # プレイヤーをルームに追加
     join_room(room_id)
-
-    # プレイヤー自身に番号を送信
-    emit('assign_number', {'myN': myN}, room=request.sid)
+    countn=len(rooms[room_id]['players'])
     # ルーム全員にルーム情報を送信
-    countn=0
-    +countn
     emit('update_room', {'message': f'{playername} がルームに参加しました', 'players': rooms[room_id]['players']}, room=room_id, countN=countn)
 
 
@@ -130,11 +129,9 @@ def handle_start_game(data):
     if rooms[room_id]['host'] != playername:
         emit('error', {'message': 'ゲームを開始できるのはホストのみです'})
         return
-
     if len(rooms[room_id]['players']) <= 1:
         emit('error', {'message': '参加者が一人だけではゲームを開始できません'})
         return
-
     # ログにゲーム開始を記録
     logging.warning(f"ルーム {room_id} で {playername} によりゲームが開始されました")
 
@@ -145,12 +142,21 @@ def handle_start_game(data):
     }, room=room_id)
 
 
+
 @socketio.on('disconnect')
 def handle_disconnect():
     for room_id, room_data in list(rooms.items()):
-        if request.sid in room_data['players']:
-            room_data['players'].remove(request.sid)
-            emit('update_room', room_data, room=room_id)
+        # セッションIDからプレイヤー名を取得
+        playername = room_data.get('sessions', {}).pop(request.sid, None)
+        if playername:
+            # プレイヤーをリストから削除
+            room_data['players'].remove(playername)
+            emit('update_room', {
+                'message': f'{playername} が切断しました',
+                'players': room_data['players']
+            }, room=room_id)
+
+            # プレイヤーがいない場合はルームを削除
             if not room_data['players']:
                 del rooms[room_id]
             break
@@ -164,9 +170,10 @@ def game():
         room_id = request.args.get('room_id')
         playername = request.args.get('playername')
     # プレイヤー番号を計算して送信
+    logging.warning(f"ルーム {rooms[room_id]}")
     myN = rooms[room_id]['players'].index(playername)
     countmyN = len(rooms[room_id]['players'])
-    return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN)
+    return render_template('game.html', room_id=room_id, myN=myN, countmyN=countmyN,players_in_room=rooms[room_id]['players'])
 
 #死亡判定
 @socketio.on('operable')
@@ -186,6 +193,7 @@ def operable(data):
     # 状態を更新
     rooms_operable[room_id][playername] = operable
     alive_count = countmyN
+
     # 死亡リストの更新
     if operable == 0 and playername not in death_order[room_id]:
         alive_count -= 1
@@ -198,7 +206,6 @@ def operable(data):
             if state == 1 and player not in death_order[room_id]:
                 death_order[room_id].append(player)
                 break
-
         # ランキングデータ送信
         emit('ranking_data', {
             'room_id': room_id,

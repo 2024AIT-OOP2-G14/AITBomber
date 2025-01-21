@@ -1,7 +1,6 @@
 // game.js（他のファイル）
 console.log(socket);  // window.socketとしてグローバルにアクセスできる
 
-
 document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     const roomId = params.get('room_id');
@@ -23,7 +22,6 @@ function joinRoom(roomId, playerName) {
 socket.on('update_room', (room,countn) => {
     // `<section id="update_room">` を取得
     const updateRoomSection = document.getElementById('update_room');
-    console.log(`確認: countn=${countn}`);
     // room オブジェクトが正しく受信されたか確認
     if (room && Array.isArray(room.players)) {
         // プレイヤーリストを生成
