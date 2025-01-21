@@ -131,6 +131,10 @@ def handle_start_game(data):
         emit('error', {'message': 'ゲームを開始できるのはホストのみです'})
         return
 
+    if len(rooms[room_id]['players']) <= 1:
+        emit('error', {'message': '参加者が一人だけではゲームを開始できません'})
+        return
+
     # ログにゲーム開始を記録
     logging.warning(f"ルーム {room_id} で {playername} によりゲームが開始されました")
 
@@ -139,7 +143,6 @@ def handle_start_game(data):
         'message': 'ゲームが開始されました',
         'room_id': room_id
     }, room=room_id)
-
 
 
 @socketio.on('disconnect')
