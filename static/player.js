@@ -2,8 +2,8 @@ class Player{
     bombLimiter = 180   //爆弾が爆発するまでのフレーム数（180で3秒）
     blastLimiter = 30   //爆風の持続フレーム数
 
-    name = 'hogehoge';
-
+    name;
+   
     gN;
     gX;
     gY;
@@ -24,11 +24,14 @@ class Player{
     blastTime = [0,0,0,0,0,0,0,0,0,0];
     blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
-    constructor(gn,gx,gy){
-        this.gN = gn;
-        this.gX = gx;
-        this.gY = gy;
+    // コンストラクタにplayername, gN, gX, gYを追加
+    constructor(playername = 'hogehoge', gn, gx, gy) {
+        this.name = playername;  // 名前を設定（デフォルト値）
+        this.gN = gn;  // プレイヤー番号
+        this.gX = gx;  // x座標
+        this.gY = gy;  // y座標
     }
+
 
     setBomb() {
         if(!this.existBomb(Math.round(this.gY/squareSize),Math.round(this.gX/squareSize)) && this.bYX[this.nextBombID].length == 0 && this.bCount < this.bLimit) {

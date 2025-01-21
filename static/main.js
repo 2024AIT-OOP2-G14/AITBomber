@@ -35,12 +35,36 @@ let nowisIW = false
 
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 let player = [];
+// プレイヤー番号に応じて開始位置を変え、Player クラスを順番に定義
+playersInRoom.forEach((playername, index) => {
+    let x, y;
 
-player.push(new Player(0, squareSize, squareSize));
-player.push(new Player(1, WIDTH - 2 * squareSize, squareSize));
-player.push(new Player(2, squareSize, HEIGHT - 2 * squareSize));
-player.push(new Player(3, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize));
+    // プレイヤー番号 (index) に応じて位置を変更
+    switch (index) {
+        case 0: // 左上
+            x = squareSize;
+            y = squareSize;
+            break;
+        case 1: // 右上
+            x = WIDTH - 2 * squareSize;
+            y = squareSize;
+            break;
+        case 2: // 左下
+            x = squareSize;
+            y = HEIGHT - 2 * squareSize;
+            break;
+        case 3: // 右下
+            x = WIDTH - 2 * squareSize;
+            y = HEIGHT - 2 * squareSize;
+            break;
+        default: // それ以外のプレイヤー（必要なら追加のロジックを入れる）
+            x = squareSize;
+            y = squareSize;
+    }
 
+    // プレイヤーインスタンスを作成し、player 配列に追加
+    player.push(new Player(playername, index, x, y));
+});
 let rWidth = squareSize;         // 任意の数を入れることで、プレイヤーの大きさが決定される
 let rHeight;
 
@@ -74,6 +98,16 @@ socket.on('connect', () => { })
 var map = new Map(wblock, hblock);
 
 socket.on('connect', () => {
+     // URLのクエリパラメータからroom_idを取得
+     const params = new URLSearchParams(window.location.search);
+     const roomId = params.get('room_id');
+ 
+     if (roomId) {
+         // プレイヤーをルームに参加させる
+         socket.emit('join_room', { room_id: roomId });
+     } else {
+         console.error('room_id is not found in URL parameters');
+     }
     if (myN === 0) {
         // ホストがマップ生成
         map.GenerateBreakWall();
@@ -274,21 +308,6 @@ function draw() {
 
     sendOperable(player[myN].operable);  // myN の後に sendOperable を呼び出す
 
-
-    socket.on('game_end', (data) => {
-        console.log("ゲームが終わりました:", data); // dataの内容をコンソールで確認
-
-        // URLのクエリパラメータからplayernameを取得
-        const params = new URLSearchParams(window.location.search);
-        const playerName = params.get('playername'); // playernameを取得
-
-        // 'game_end' から取得したデータ（ここではoperableN）をログに出力
-        console.log(`operableN: ${data.operableN}`);
-
-        // ranking.html に遷移（プレイヤーネームもクエリパラメータとして追加）
-        location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
-    });
-
     //プレイヤー描画
     for (var i = 0; i < countmyN; i++) {
         if (player[i].operable) {
@@ -302,16 +321,6 @@ function draw() {
         }
     }
 
-}
-
-const sendOperable = (operable) => {
-    socket.emit('operable', {
-        operable: operable, countmyN: countmyN
-    });
-};
-if (player[myN].operable == 0) {
-    console.log(`me.operable=${player[myN].operable}`);
-    sendOperable(0);  // myN の後に sendOperable を呼び出す
 }
 
 socket.on('game_end', (data) => {
@@ -338,28 +347,6 @@ window.onload = function () {
     requestAnimationFrame(onPaint);
 
 }
-// ソケットに接続
-socket.on('connect', () => {
-    // URLのクエリパラメータからroom_idを取得
-    const params = new URLSearchParams(window.location.search);
-    const roomId = params.get('room_id');
 
-    if (roomId) {
-        // プレイヤーをルームに参加させる
-        socket.emit('join_room', { room_id: roomId });
-    } else {
-        console.error('room_id is not found in URL parameters');
-    }
-});
-
-socket.on('game_end', (data) => {
-    console.log("ゲームが終わりました:", data); // ゲーム終了データを確認
-
-    // URLのクエリパラメータからplayernameを取得
-    const params = new URLSearchParams(window.location.search);
-    const playerName = params.get('playername'); // プレイヤー名を取得
-    // ランキングページに遷移（room_id と playername をクエリに追加）
-    location.href = `ranking.html?room_id=${data.room_id}&playername=${playerName}`;
-});
 
 
