@@ -30,9 +30,11 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
-//埋まっているかのフラッグ
+//埋まっているかのフラグ
 let nowisIW = false
-
+//爆弾に埋まってるときその爆弾を記録
+let nowisIB = [1,3]
+console.log(nowisIB)
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 let player = [];
 // プレイヤー番号に応じて開始位置を変え、Player クラスを順番に定義
@@ -131,7 +133,6 @@ socket.on('playerReceiver', (playerData) => {
         player[playerData.gN].gY = playerData.gY;
         player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
         player[playerData.gN].blastRange = structuredClone(playerData.blastRange)
-        console.log(playerData.gN)
     }
 });
 
@@ -153,21 +154,22 @@ function onPaint() {
         while (gTimer + 16.67 < performance.now()) {
             gTimer += 16.67;
             if (player[myN].operable) {
+                nowisIB = player[myN].stepOnBomb()
                 //今埋まっているか調べる
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) {
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) {
                     nowisIW = true
                 }
                 player[myN].gX -= gKey[65] * player[myN].gS;    //g[65]=1（aキーが押し込まれた）
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gX += gKey[65] * player[myN].gS } //ダメならもどす
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gX += gKey[65] * player[myN].gS } //ダメならもどす
 
                 player[myN].gX += gKey[68] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gX -= gKey[68] * player[myN].gS }
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gX -= gKey[68] * player[myN].gS }
 
                 player[myN].gY -= gKey[87] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gY += gKey[87] * player[myN].gS }
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gY += gKey[87] * player[myN].gS }
 
                 player[myN].gY += gKey[83] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, map.bombermap)) { player[myN].gY -= gKey[83] * player[myN].gS }
+                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gY -= gKey[83] * player[myN].gS }
                 //値を戻す
                 nowisIW = false
             }

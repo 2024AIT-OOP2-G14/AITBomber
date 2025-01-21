@@ -112,6 +112,17 @@ class Player{
         return false
     }
 
+    //その座標のプレーヤーが爆弾を踏んでいるか
+    stepOnBomb() {
+        for(var i=0; i<this.bLimit;i++) {
+            if(this.bYX[i][0]-0.9 < this.gY/squareSize && this.gY/squareSize < this.bYX[i][0]+0.9 && this.bYX[i][1]-0.9 < this.gX/squareSize && this.gX/squareSize < this.bYX[i][1]+0.9) {
+                return this.bYX[i]
+            }    
+        }
+        return []
+    }
+
+
     //実際の爆風の距離を計算
     explotionRange (i){
         //左
