@@ -147,28 +147,28 @@ class Player{
         //左
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][0] ++
-            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0 && map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 3) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] == 1 || map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] == 2 || map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] == 4) {
                 break
             }
         }
         //右
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][1] ++
-            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0 && map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 3) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] == 1 || map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] == 2 || map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] == 4) {
                 break
             }
         }
         //上
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][2] ++
-            if(map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0 && map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 3) {
+            if(map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] == 1 || map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] == 2 || map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] == 4) {
                 break
             }
         }
         //下
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][3] ++
-            if(map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0 && map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
+            if(map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] == 1 || map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] == 2 || map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] == 4) {
                 break
             }
         }
