@@ -1,9 +1,11 @@
+const bYutori = 0.9
+
 class Player{
     bombLimiter = 180   //爆弾が爆発するまでのフレーム数（180で3秒）
     blastLimiter = 30   //爆風の持続フレーム数
 
-    name = 'hogehoge';
-
+    name;
+   
     gN;
     gX;
     gY;
@@ -24,11 +26,14 @@ class Player{
     blastTime = [0,0,0,0,0,0,0,0,0,0];
     blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
-    constructor(gn,gx,gy){
-        this.gN = gn;
-        this.gX = gx;
-        this.gY = gy;
+    // コンストラクタにplayername, gN, gX, gYを追加
+    constructor(playername = 'hogehoge', gn, gx, gy) {
+        this.name = playername;  // 名前を設定（デフォルト値）
+        this.gN = gn;  // プレイヤー番号
+        this.gX = gx;  // x座標
+        this.gY = gy;  // y座標
     }
+
 
     setBomb() {
         if(!this.existBomb(Math.round(this.gY/squareSize),Math.round(this.gX/squareSize)) && this.bYX[this.nextBombID].length == 0 && this.bCount < this.bLimit) {
@@ -109,33 +114,56 @@ class Player{
         return false
     }
 
+    //その座標のプレーヤーが爆弾を踏んでいるか
+    stepOnBomb(nIB) {
+
+        for(var k=0; k<2; k++) {
+            if(nIB[k].length == 0) {
+                for(var i=0; i<this.bLimit;i++) {
+                    if(this.bYX[i][0]-bYutori < this.gY/squareSize && this.gY/squareSize < this.bYX[i][0]+bYutori && this.bYX[i][1]-bYutori < this.gX/squareSize && this.gX/squareSize < this.bYX[i][1]+bYutori) {
+                        if((nIB[0].length == 0 && nIB[1].length == 0) || !(JSON.stringify(nIB[0]) == JSON.stringify(this.bYX[i]) || JSON.stringify(nIB[1]) == JSON.stringify(this.bYX[i]))) {
+                            nIB[k] = this.bYX[i]
+                        }
+                    }    
+                }
+            }else {
+                if(!(nIB[k][0]-bYutori < this.gY/squareSize && this.gY/squareSize < nIB[k][0]+bYutori && nIB[k][1]-bYutori < this.gX/squareSize && this.gX/squareSize < nIB[k][1]+bYutori)) {
+                    nIB[k] = []
+                }
+            }
+
+        }
+        return nIB
+    }
+
+
     //実際の爆風の距離を計算
     explotionRange (i){
         //左
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][0] ++
-            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 0 && map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]-r] != 3) {
                 break
             }
         }
         //右
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][1] ++
-            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0) {
+            if(map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 0 && map.bombermap[this.blastYX[i][0]][this.blastYX[i][1]+r] != 3) {
                 break
             }
         }
         //上
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][2] ++
-            if(map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0) {
+            if(map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 0 && map.bombermap[this.blastYX[i][0]-r][this.blastYX[i][1]] != 3) {
                 break
             }
         }
         //下
         for(var r=1; r<=this.bRange; r++) {
             this.blastRange[i][3] ++
-            if(map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
+            if(map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0 && map.bombermap[this.blastYX[i][0]+r][this.blastYX[i][1]] != 0) {
                 break
             }
         }
