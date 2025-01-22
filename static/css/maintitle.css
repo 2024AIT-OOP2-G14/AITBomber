@@ -1,43 +1,60 @@
-#titlelogo{
-    border:solid 3px rgb(8, 8, 8); /* 枠線追加 */
-    border-radius: 5px; /* ボタンの角を丸める */
-    font-size: 5em;
+#titlelogo {
+    border: solid 3px rgb(8, 8, 8);
+    border-radius: 5px;
     margin-top: 5vh;
-    width:70%;
-    text-align: center;
+    margin: auto;
+    margin-top: 5vh;
+    height: 45vh;
+    width: 100%;
+    max-width: 700px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .select {
-    list-style: none; /* デフォルトのリストスタイルを削除 */
-    
+    list-style: none;
+    /* デフォルトのリストスタイルを削除 */
+
     padding: 0;
     margin-top: 10%;
 }
 
 .select li {
-    margin: 10vh 0; /* リストアイテム間の余白 */
+    margin: 10vh 0;
+    /* リストアイテム間の余白 */
 }
 
 .select li a {
-    display: block; /* リンクをボタン風にする */
-    width:25vw;
+    display: block;
+    /* リンクをボタン風にする */
+    width: 25vw;
     min-width: 200px;
     margin: auto;
-    text-decoration: none; /* 下線を削除 */
-    color: #333; /* 任意のテキストカラー */
-    font-size: 30px; /* 任意のフォントサイズ */
+    text-decoration: none;
+    /* 下線を削除 */
+    color: #333;
+    /* 任意のテキストカラー */
+    font-size: 30px;
+    /* 任意のフォントサイズ */
     text-align: center;
     padding: 2vh 0;
-    border: 2px solid #333; /* 任意のボーダー */
-    border-radius: 5px; /* ボタンの角を丸める */
-    
-    transition: 0.3s; /* ホバー時のエフェクト */
-    left:40%;
-    
+    border: 2px solid #333;
+    /* 任意のボーダー */
+    border-radius: 5px;
+    /* ボタンの角を丸める */
+
+    transition: 0.3s;
+    /* ホバー時のエフェクト */
+    left: 40%;
+
 }
 
 .select li a:hover {
-    background-color: #333; /* 背景色の変更 */
-    color: #fff; /* テキストカラーの変更 */
-    border-color: #fff; /* ボーダーカラーの変更 */
+    background-color: #333;
+    /* 背景色の変更 */
+    color: #fff;
+    /* テキストカラーの変更 */
+    border-color: #fff;
+    /* ボーダーカラーの変更 */
 }
