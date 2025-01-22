@@ -91,6 +91,7 @@ class Map{
                             iTW = true
                         }
                     }
+                }
             }
         }
         return iTW
