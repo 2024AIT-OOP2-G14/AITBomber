@@ -3,15 +3,13 @@ from flask_socketio import SocketIO, join_room, leave_room, emit
 import uuid  # UUIDを生成するモジュール
 import sys
 import logging
-
-
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "f4Pjp3UgJa51"  # セキュリティーのためにいるらしい
 
 # Socket.IOの初期化
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
@@ -279,5 +277,5 @@ def ranking():
     )
 
 if __name__ == '__main__':
-    # 本番環境では `gunicorn` を使って起動するため、`socketio.run()` は使わない
-    socketio.run(app, host="0.0.0.0", port=8880, debug=True)  # ローカル開発用として使う場合
+    #socketio.run(app, host="0.0.0.0", port=8880, debug=True)  # ローカル開発用として使う場合
+    pass
