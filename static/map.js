@@ -72,7 +72,7 @@ class Map{
                     if(Math.random()*den<=div){
                         this.bombermap[i][j]=4
                         this.itemmap[i][j] = getRandomInteger(5,8);
-                        console.log(this.itemmap[i][j])
+                        //console.log(this.itemmap[i][j])
                     }
                     }
                 }

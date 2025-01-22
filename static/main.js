@@ -280,8 +280,6 @@ function draw() {
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 4) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = map.itemmap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r];
                         //get_item(myN);
-                    } else {
-                        break
                     }
                 }
                 //右
@@ -298,8 +296,6 @@ function draw() {
                     }else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 4) {
                             map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = map.itemmap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r];
                             //get_item(myN);
-                    } else {
-                        break
                     }
                 }
                 //上
@@ -316,8 +312,6 @@ function draw() {
                     }else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 4) {
                         map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = map.itemmap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]];
                         //get_item(myN);
-                    } else {
-                        break
                     }
                 }
                 //下
@@ -335,8 +329,6 @@ function draw() {
                         map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] = map.itemmap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]];
                         console.log(map.itemmap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]])
                         //get_item(myN);
-                    } else{
-                        break
                     }
                 }
             }
