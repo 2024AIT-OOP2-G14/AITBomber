@@ -19,6 +19,9 @@ const HEIGHT = squareSize * hblock;
 let spaceKeyRecharge = 10
 let spaceTime = 0;
 
+//死亡時のリミット
+deathtime=145
+
 //プレイヤー情報
 const user = document.createElement('img');
 //壁情報
@@ -351,6 +354,18 @@ function draw() {
         if (!operable) {
             // プレイヤーが死亡した場合に死亡判定を送信
             socket.emit('player_death', { playername: playerName });
+
+            if(deathtime>0){ //145フレーム死亡演出表示
+                g.fillStyle = "#344699";
+                g.textAlign = 'center';
+                g.font = '400px Arial';
+                g.fillText("YOU LOSE",WIDTH/2, HEIGHT/2+145,WIDTH)
+                deathtime-=1;
+            }else{//観戦中表示
+                g.fillStyle = "#ffffff";
+                g.font = '20px Arial';
+                g.fillText("観戦中",WIDTH/2, HEIGHT-10)
+            }
         }
     };
 
@@ -365,6 +380,7 @@ function draw() {
             g.drawImage(user, player[i].gX, player[i].gY, rWidth, rHeight);
             g.fillStyle = "#ffffff";
             g.textAlign = 'center';
+            g.font = '10px Arial';
             g.fillText(player[i].name, player[i].gX + squareSize / 2, player[i].gY);
         }
     }
