@@ -30,10 +30,8 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
-//埋まっているかのフラグ
-let nowisIW = false
 //爆弾に埋まってるときその爆弾を記録
-let nowisIB = [1,3]
+let nowisIB = [[],[]]
 console.log(nowisIB)
 //プレイヤー番号により開始位置を変え、プレイヤークラスを定義(0:左上, 1:右上, 2:左下, 3:右下)
 let player = [];
@@ -154,24 +152,23 @@ function onPaint() {
         while (gTimer + 16.67 < performance.now()) {
             gTimer += 16.67;
             if (player[myN].operable) {
-                nowisIB = player[myN].stepOnBomb()
-                //今埋まっているか調べる
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) {
-                    nowisIW = true
-                }
+
+                nowisIB = player[myN].stepOnBomb(nowisIB) 
+
                 player[myN].gX -= gKey[65] * player[myN].gS;    //g[65]=1（aキーが押し込まれた）
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gX += gKey[65] * player[myN].gS } //ダメならもどす
+                if (gKey[65] && map.isInsideWall(player[myN].gX, player[myN].gY, nowisIB)) { player[myN].gX += gKey[65] * player[myN].gS } //ダメならもどす
 
                 player[myN].gX += gKey[68] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gX -= gKey[68] * player[myN].gS }
+                if (gKey[68] && map.isInsideWall(player[myN].gX, player[myN].gY, nowisIB)) { player[myN].gX -= gKey[68] * player[myN].gS }
 
                 player[myN].gY -= gKey[87] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gY += gKey[87] * player[myN].gS }
+                if (gKey[87] && map.isInsideWall(player[myN].gX, player[myN].gY, nowisIB)) { player[myN].gY += gKey[87] * player[myN].gS }
 
                 player[myN].gY += gKey[83] * player[myN].gS;
-                if (map.isInsideWall(player[myN].gX, player[myN].gY, nowisIW, nowisIB)) { player[myN].gY -= gKey[83] * player[myN].gS }
+                if (gKey[83] && map.isInsideWall(player[myN].gX, player[myN].gY, nowisIB)) { player[myN].gY -= gKey[83] * player[myN].gS }
                 //値を戻す
-                nowisIW = false
+                console.log(nowisIB[0])
+                console.log(nowisIB[1])
             }
             //タイマー進める
             player[myN].bTimer();
