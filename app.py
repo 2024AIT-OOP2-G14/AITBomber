@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = "f4Pjp3UgJa51"  # セキュリティーのためにいるらしい
 
 # Socket.IOの初期化
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # ゲーム用のデータ
 rooms = {}  # ルームIDをキーとして保持
@@ -277,5 +277,5 @@ def ranking():
     )
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=8880, debug=True)  # ローカル開発用として使う場合
+    socketio.run(app, host="0.0.0.0", port=8880, debug=False)  # ローカル開発用として使う場合
     #pass
