@@ -1,8 +1,72 @@
-.room{
-    font-size: 100px;
+#title{
+    display: flex; /* フレックスボックスを有効化 */
+    justify-content: center; /* 水平方向中央寄せ */
+    align-items: center; /* 垂直方向中央寄せ */
+    flex-direction: column; /* 子要素を縦方向に並べる */
+    height: 20vh; /* ビューポート全体の高さを使用 */
+    text-align: center; /* テキストを中央寄せ */
+    font-size: 50px; /* 文字サイズを変更 */
+    color: #333; /* 文字色を設定 */
+    margin: 10px 0; /* 上下に余白を追加 */
+}
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px;
 }
 
-.member {
-    text-align: center;
-    justify-content: center;
+section#room-info {
+    background-color: #e8e8e8;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    width: 100%;
+    text-align: left;
 }
+
+section#room-info p {
+    margin: 5px 0;
+}
+
+h2#member {
+    font-size: 20px;
+    margin-bottom: 10px;;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    text-align: left;
+}
+
+section#update_room {
+    background-color: #e8e8e8;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+section#update_room li {
+    margin: 5px 0;
+    list-style-type: none;
+}
+
+div#startGameButton button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+div#startGameButton button:hover {
+    background-color: #0056b3;
+}
+
+div#startGameButton button:focus {
+    outline: none;
+}
+

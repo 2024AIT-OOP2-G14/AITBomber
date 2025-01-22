@@ -13,31 +13,34 @@
 
 <body>
     <main>
-            <!-- ルームの情報は実装不可なら削除してね -->
-            <!-- 実装しようかな -->
+        <!-- ルームの情報は実装不可なら削除してね -->
+        <!-- 実装しようかな -->
+      
+        <h1 id="title">プレイヤー待機中</h1>
+        <div class="container">
+        <section id="room-info">
+            <p id="roomID">ルームID: <strong>{{ room_id }}</strong></p>
+            <p id="roomname">ルーム名: {{ room['name'] }}</p>
+            <p id="host">ホスト: {{ room['host'] }}</p>
+            <!-- <p id="gamerule">ルール: {{ room['rule'] }}</p> -->
+        </section>
 
-            <h1 id="title">プレイヤー待機中</h1>
-            <section class="room-info">
+        <h2 id="member">参加者</h2>
 
-                <p id="roomID">ルームID: <strong>{{ room_id }}</strong></p>
-                <p id="roomname">ルーム名: {{ room['name'] }}</p>
-                <p id="host">ホスト: {{ room['host'] }}</p>
-                <!-- <p id="gamerule">ルール: {{ room['rule'] }}</p> -->
-            </section>
-
-            <h2 id="member">参加者</h2>
- 
-            <section id="update_room">
-                {% for player in room['players'] %}
-                <li>{{ player }}</li>
-                {% endfor %}
-                {% for i in range(10) %}
-                <li>{{i+1}}</li>
-                {% endfor %}
-            </section>          
+        <section id="update_room">
+            {% for player in room['players'] %}
+            <li>{{ player }}</li>
+            {% endfor %}
+            {% for i in range(10) %}
+            <li>{{i+1}}</li>
+            {% endfor %}
+        </section>
+        <div id="startGameButton">
             {% if playername == room['host'] %}
-             <button id="startGameButton">PLAY</button>
+            <button>PLAY</button>
             {% endif %}
+        </div>
+        </div>
     </main>
 </body>
 
