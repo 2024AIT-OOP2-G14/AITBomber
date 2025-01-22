@@ -131,6 +131,7 @@ socket.on('mapchanger', (data) => {
 
 socket.on('playerReceiver', (playerData) => {
     if (playerData.gN != myN) {
+        player[playerData.gN].operable = playerData.operable;
         player[playerData.gN].gX = playerData.gX;
         player[playerData.gN].gY = playerData.gY;
         player[playerData.gN].blastYX = structuredClone(playerData.blastYX)
@@ -171,8 +172,8 @@ function onPaint() {
                 player[myN].gY += gKey[83] * player[myN].gS;
                 if (gKey[83] && map.isInsideWall(player[myN].gX, player[myN].gY, nowisIB)) { player[myN].gY -= gKey[83] * player[myN].gS }
                 //値を戻す
-                console.log(nowisIB[0])
-                console.log(nowisIB[1])
+                //console.log(nowisIB[0])
+                //console.log(nowisIB[1])
             }
             //タイマー進める
             player[myN].bTimer();
