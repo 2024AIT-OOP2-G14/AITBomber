@@ -242,8 +242,8 @@ def handle_connect(data):
 @socketio.on('save_map')
 def server_echo(data):
     room_id = data.get('room_id') # ルームID
-    bombermap = data.get('bombermap') # 現在の部屋のプレイヤー数
-    emit('maploader',bombermap,broadcast=True,room=room_id)
+    mapData = data.get('map') # 現在の部屋のプレイヤー数
+    emit('maploader',mapData,broadcast=True,room=room_id)
 
 #マップの変更点を送る
 @socketio.on('changes_map')
