@@ -274,5 +274,4 @@ def ranking():
     )
 
 if __name__ == '__main__':
-    # 開発用のsocketio.run() は本番環境では不要
     socketio.run(app, host="0.0.0.0", port=8880, debug=False)  # ローカル開発用として使う場合
