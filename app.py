@@ -18,6 +18,7 @@ rooms = {}  # ルームIDをキーとして保持
 death_order = {}  # 死亡順を保持
 rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
 rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
+
 connected_users=0 #ゲーム接続人数
 
 @app.route('/')
@@ -179,6 +180,7 @@ def game():
 #死亡判定
 @socketio.on('operable')
 def operable(data):
+    global rooms_operable, rooms_count, death_order
 
     operable = data.get('operable')  # 生きているか
     room_id = data.get('room_id')  # ルームID
@@ -193,29 +195,35 @@ def operable(data):
 
     # 状態を更新
     rooms_operable[room_id][playername] = operable
-    alive_count = countmyN
 
     # 死亡リストの更新
     if operable == 0 and playername not in death_order[room_id]:
-        alive_count -= 1
         death_order[room_id].append(playername)
 
+    # 生存者数をルームの全体の人数から死亡した人数を引いて計算
+    total_players = rooms_count[room_id]  # ルーム内の全体のプレイヤー数
+    dead_players = len(death_order[room_id])  # 死亡したプレイヤーの数
+    alive_count = total_players - dead_players  # 生存者数を計算
+    
+    # プレイヤーが2人以上であれば、arriveを判定（これないと一人でデバック作業するとゲーム終わってしまう）
+    if len(death_order[room_id]) >= 1:
     # 生存者が1人になった場合
-    if alive_count == 1:
-        # 最後の生存者を死亡リストに追加
-        for player, state in rooms_operable[room_id].items():
-            if state == 1 and player not in death_order[room_id]:
-                death_order[room_id].append(player)
-                break
-        # ランキングデータ送信
-        emit('ranking_data', {
-            'room_id': room_id,
-            'death_order': death_order[room_id]
-        }, room=room_id)
-
-        # ゲーム終了イベント送信
-        emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
+        if alive_count == 1:
+            logging.warning(f"total_players {total_players}dead_players {dead_players}")
+            # 最後の生存者を死亡リストに追加
+            for player, state in rooms_operable[room_id].items():
+                if state == 1 and player not in death_order[room_id]:
+                    death_order[room_id].append(player)
+                    break
         
+            # ランキングデータ送信
+            emit('ranking_data', {
+                'room_id': room_id,
+                'death_order': death_order[room_id]
+            }, room=room_id)
+
+            # ゲーム終了イベント送信
+            emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
 
 @socketio.on('connect_counter')
 def handle_connect(countmyN):
@@ -227,8 +235,7 @@ def handle_connect(countmyN):
     if connected_users == countmyN:
         emit('map_up',broadcast=True)
         connected_users=0
-        
-        
+
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
 def server_echo(bombermap):
