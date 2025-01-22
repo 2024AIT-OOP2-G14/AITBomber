@@ -25,7 +25,7 @@ class Map{
     //壊れる壁を生成
     GenerateBreakWall(){
         //分母、分子（好きに変えていいよ）
-        const den=5,div=2
+        const den=5,div=1
         //壁内側探索
         for(var i=1; i<hblock; i++){
             for(var j=1; j<wblock; j++){
@@ -42,13 +42,33 @@ class Map{
         }
     }
 
+    //アイテムが入った壁を生成
+    iteminWall(){
+        //分母、分子（好きに変えていいよ）
+        const den=5,div=3
+        //壁内側探索
+        for(var i=1; i<hblock; i++){
+            for(var j=1; j<wblock; j++){
+                //四方の角だけ生成しないようにする（複数プレイヤー置けるようになったら条件変えてもいいかも）
+                if((!(i==1&&(j==1||j==2||j==wblock-3||j==wblock-2)))&&(!(i==2&&(j==1||j==wblock-2)))&&(!(i==hblock-3&&(j==1||j==wblock-2)))&&(!(i==hblock-2&&((j==1||j==2||j==wblock-3||j==wblock-2))))){
+                    //何もないところにden分のdivの確率で壁を生成する
+                    if(this.bombermap[i][j]==0){
+                    if(Math.random()*den<=div){
+                        this.bombermap[i][j]=4
+                    }
+                    }
+                }
+            }
+        }     
+    }
+
     //(x,y)の座標が壁の中にあるか判定（boolean）
     isInsideWall(x,y,nowisIB) {
         let iTW = false
         //壁全探索
         for(var i=0; i<hblock; i++){
             for(var j=0; j<wblock; j++){
-                if(this.bombermap[i][j] == 1 || this.bombermap[i][j] == 2 || this.bombermap[i][j] == 3)
+                if(this.bombermap[i][j]>=1&&this.bombermap[i][j]<=4){
                     //ある一つの壁の内側に、与えられた(x,y)が入っているか(0.9ではなく1にしてしまうと1pxの誤差で道に入れないので、ゆとりを持たせるために0.9にしている。)
                     if((j-bYutori)*(squareSize) < x && x < (j+bYutori)*squareSize && (i-bYutori)*squareSize < y && y < (i+bYutori)*squareSize) {
 
