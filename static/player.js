@@ -26,6 +26,10 @@ class Player{
     blastTime = [0,0,0,0,0,0,0,0,0,0];
     blastRange = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]]; //各爆風の実際に描画する縦横の距離
 
+    // URLのクエリパラメータからroom_idを取得
+    params = new URLSearchParams(window.location.search);
+    roomId = params.get('room_id');
+
     // コンストラクタにplayername, gN, gX, gYを追加
     constructor(playername = 'hogehoge', gn, gx, gy) {
         this.name = playername;  // 名前を設定（デフォルト値）
@@ -77,7 +81,8 @@ class Player{
                     socket.emit('changes_map', {
                         cy: y, // 変更したマスの y 座標
                         cx: x, // 変更したマスの x 座標
-                        mapData: 0 // そのマスの新しい値
+                        mapData: 0, // そのマスの新しい値
+                        room_id: roomId //ルームid
                     });
 
                     this.bYX[i] = [];

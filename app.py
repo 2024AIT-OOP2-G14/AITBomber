@@ -251,13 +251,14 @@ def change(data):
     cy = data.get('cy')
     cx = data.get('cx')
     mapData = data.get('mapData')
+    room_id = data.get('room_id') # ルームID
 
-    emit('mapchanger', {'cy': cy, 'cx': cx, 'mapData': mapData}, broadcast=True)
+    emit('mapchanger', {'cy': cy, 'cx': cx, 'mapData': mapData}, broadcast=True,room=room_id)
 
  #プレイヤー情報を送る
 @socketio.on('send_player')
-def send(playerData):
-    emit('playerReceiver', playerData, broadcast=True)
+def send(playerData,room_id):
+    emit('playerReceiver', playerData, broadcast=True,room=room_id)
 
 @app.route('/ranking.html', methods=['GET', 'POST'])#ランキング画面に遷移
 def ranking():
