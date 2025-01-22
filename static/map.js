@@ -73,7 +73,7 @@ class Map{
                     if((j-bYutori)*(squareSize) < x && x < (j+bYutori)*squareSize && (i-bYutori)*squareSize < y && y < (i+bYutori)*squareSize) {
 
                         //壁なら
-                        if(this.bombermap[i][j] == 1 || this.bombermap[i][j] == 2) {
+                        if(this.bombermap[i][j] == 1 || this.bombermap[i][j] == 2 || this.bombermap[i][j] == 4) {
                             //console.log("wall")
                             iTW = true
                         }
