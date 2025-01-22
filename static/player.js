@@ -13,7 +13,7 @@ class Player{
 
     operable = 1;   //生きているか（0: 死, 1: 生）
 
-    bLimit = 1; //爆弾を置ける最大数
+    bLimit = 3; //爆弾を置ける最大数
     bCount = 0; //爆弾を置いている数
 
     bRange = 1; //爆風の長さ
