@@ -94,31 +94,35 @@ blast.src = "../static/image/blast.png";
 //マップ生成
 var map = new Map(wblock, hblock);
 
-//ソケットに接続
-socket.on('connect', () => {
-     // URLのクエリパラメータからroom_idを取得
-     const params = new URLSearchParams(window.location.search);
-     const roomId = params.get('room_id');
- 
-     if (roomId) {
-         // プレイヤーをルームに参加させる
-         socket.emit('join_room', { room_id: roomId });
-     } else {
-         console.error('room_id is not found in URL parameters');
-     }
+socket.on('map_up',() => {
     if (myN === 0) {
         // ホストがマップ生成
         map.GenerateBreakWall();
         socket.emit('save_map', map.bombermap);
     }
 });
-
 // マップの更新受信
 socket.on('maploader', (bombermap) => {
     if (myN !== 0) {
         map.bombermap = bombermap;
     }
 });
+
+socket.on('connect', () => {
+     // URLのクエリパラメータからroom_idを取得
+     const params = new URLSearchParams(window.location.search);
+     const roomId = params.get('room_id');
+
+     if (roomId) {
+         // プレイヤーをルームに参加させる
+         socket.emit('join_room', { room_id: roomId });
+     } else {
+         console.error('room_id is not found in URL parameters');
+     }
+
+    socket.emit('connect_counter',countmyN);
+});
+
 
 socket.on('mapchanger', (data) => {
     const { cy, cx, mapData } = data; // 受け取ったデータを展開
