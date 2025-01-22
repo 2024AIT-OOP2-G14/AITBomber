@@ -37,6 +37,11 @@ const bomb = document.createElement('img');
 //爆風情報
 const blast = document.createElement('img');
 
+ // URLのクエリパラメータからroom_idを取得
+ const params = new URLSearchParams(window.location.search);
+ const playerName = params.get('playername');
+ const roomId = params.get('room_id');
+
 //爆弾に埋まってるときその爆弾を記録
 let nowisIB = [[],[]]
 console.log(nowisIB)
@@ -111,10 +116,6 @@ var map = new Map(wblock, hblock);
 
 socket.on('map_up',() => {
     if (myN === 0) {
-         // URLのクエリパラメータからroom_idを取得
-        const params = new URLSearchParams(window.location.search);
-        const roomId = params.get('room_id');
-
         // ホストがマップ生成
         map.GenerateBreakWall();
         map.iteminWall();
@@ -129,10 +130,6 @@ socket.on('maploader', (bombermap) => {
 });
 
 socket.on('connect', () => {
-     // URLのクエリパラメータからroom_idを取得
-     const params = new URLSearchParams(window.location.search);
-     const roomId = params.get('room_id');
-
      if (roomId) {
          // プレイヤーをルームに参加させる
          socket.emit('join_room', { room_id: roomId });
@@ -229,7 +226,7 @@ function draw() {
     g.fillRect(squareSize, squareSize, WIDTH - 2 * squareSize, HEIGHT - 2 * squareSize);
 
     //プレイヤー情報の送信
-    socket.emit('send_player', player[myN]);
+    socket.emit('send_player', player[myN],roomId);
 
     //壁or爆弾の描画
     for (var i = 0; i < hblock; i++) {
@@ -342,10 +339,6 @@ function draw() {
     }
 
     const sendOperable = (operable) => {
-        const params = new URLSearchParams(window.location.search);
-        const playerName = params.get('playername');
-        const roomId = params.get('room_id');
-
         socket.emit('operable', {
             operable: operable,
             playername: playerName,
