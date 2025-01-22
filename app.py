@@ -18,8 +18,7 @@ rooms = {}  # ルームIDをキーとして保持
 death_order = {}  # 死亡順を保持
 rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
 rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
-
-connected_users=0 #ゲーム接続人数
+connected_users={}  #各ルームの初期接続人数を管理する辞書
 
 @app.route('/')
 def index():
@@ -225,22 +224,28 @@ def operable(data):
             # ゲーム終了イベント送信
             emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
 
-@socketio.on('connect_counter')
-def handle_connect(countmyN):
+@socketio.on('connect_count')
+def handle_connect(data):
     global connected_users
-    connected_users += 1
-    print(connected_users)
-    print(countmyN)
+
+    room_id = data.get('room_id') # ルームID
+    countmyN = data.get('countmyN') # 現在の部屋のプレイヤー数
+
+    if room_id not in connected_users:
+        connected_users[room_id] = 0
+
+    connected_users[room_id]+=1
     # 指定人数に達したら、mapを配る
-    if connected_users == countmyN:
-        emit('map_up',broadcast=True)
-        connected_users=0
+    if connected_users[room_id] == countmyN:
+        emit('map_up',broadcast=True,room=room_id)
+        connected_users[room_id]=0
 
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
-def server_echo(bombermap):
-    emit('maploader',bombermap,broadcast=True)
-
+def server_echo(data):
+    room_id = data.get('room_id') # ルームID
+    bombermap = data.get('bombermap') # 現在の部屋のプレイヤー数
+    emit('maploader',bombermap,broadcast=True,room=room_id)
 
 #マップの変更点を送る
 @socketio.on('changes_map')
