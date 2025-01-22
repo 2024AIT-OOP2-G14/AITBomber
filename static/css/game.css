@@ -1,0 +1,14 @@
+body {
+    overflow: hidden;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(255,255,255,0.5)),url(../image/kabe.png);
+    background-repeat: repeat;
+    background-size: 100vh,5vh;
+    display: flex; /* フレックスボックスを使用 */
+    justify-content: center; /* 水平方向に中央揃え */
+    align-items: center; /* 垂直方向に中央揃え */
+    height: 100vh; /* 画面全体の高さを確保 */
+    margin: 0; /* 余白を削除 */
+    background-color: #f0f0f0; /* 背景色（任意で設定） */
+}
