@@ -18,6 +18,7 @@ rooms = {}  # ルームIDをキーとして保持
 death_order = {}  # 死亡順を保持
 rooms_operable = {}  # 各ルームのプレイヤーの状態を管理する辞書
 rooms_count = {}  # 各ルームのプレイヤー総数を管理する辞書
+connected_users=0 #ゲーム接続人数
 
 @app.route('/')
 def index():
@@ -214,12 +215,23 @@ def operable(data):
 
         # ゲーム終了イベント送信
         emit('game_end', {'room_id': room_id, 'death_order': death_order[room_id]}, room=room_id)
+        
 
-
-
+@socketio.on('connect_counter')
+def handle_connect(countmyN):
+    global connected_users
+    connected_users += 1
+    print(connected_users)
+    print(countmyN)
+    # 指定人数に達したら、mapを配る
+    if connected_users == countmyN:
+        emit('map_up',broadcast=True)
+        connected_users=0
+        
+        
 #ホストからのマップ情報をホスト以外全員へ送る
 @socketio.on('save_map')
-def server_echo(bombermap) :
+def server_echo(bombermap):
     emit('maploader',bombermap,broadcast=True)
 
 
