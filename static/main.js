@@ -25,6 +25,13 @@ const user = document.createElement('img');
 const kabe = document.createElement('img');
 //壊れる壁情報
 const breakabe = document.createElement('img');
+//アイテムが入った壁
+const item_wall = document.createElement('img');
+//アイテムの画像
+const item_number1 = document.createElement('img');
+const item_number2 = document.createElement('img');
+const item_number3 = document.createElement('img');
+const item_number4 = document.createElement('img');
 //爆弾情報
 const bomb = document.createElement('img');
 //爆風情報
@@ -84,6 +91,14 @@ kabe.src = "../static/image/kabe.png";
 
 //壊れる壁画像
 breakabe.src = "../static/image/breakabe.png";
+//アイテムが入った壁
+item_wall.src = "../static/image/breakabe.png";
+
+//アイテムの画像
+item_number1.src = "../static/image/power_up.png";
+item_number2.src = "../static/image/power_down.png";
+item_number3.src = "../static/image/speed_up.png";
+item_number4.src = "../static/image/speed_down.png";
 
 //爆弾画像
 bomb.src = "../static/image/bomb.png";
@@ -102,6 +117,7 @@ socket.on('map_up',() => {
 
         // ホストがマップ生成
         map.GenerateBreakWall();
+        map.iteminWall();
         socket.emit('save_map',{ room_id: roomId,bombermap: map.bombermap});
     }
 });
@@ -179,6 +195,7 @@ function onPaint() {
                 //console.log(nowisIB[0])
                 //console.log(nowisIB[1])
             }
+
             //タイマー進める
             player[myN].bTimer();
         }
@@ -193,9 +210,14 @@ function onPaint() {
             spaceTime = spaceKeyRecharge;
         }
 
+        Position_item(myN);
         draw();
     }
     requestAnimationFrame(onPaint);
+}
+
+function getRandomInteger(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 //描画
@@ -218,6 +240,16 @@ function draw() {
                 g.drawImage(breakabe, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 3) {
                 g.drawImage(bomb, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 4) {
+                g.drawImage(item_wall, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 5) {
+                g.drawImage(item_number1, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 6) {
+                g.drawImage(item_number2, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 7) {
+                g.drawImage(item_number3, j * squareSize, i * squareSize, squareSize, squareSize)
+            } else if (map.bombermap[i][j] == 8) {
+                g.drawImage(item_number4, j * squareSize, i * squareSize, squareSize, squareSize)
             }
         }
     }
@@ -244,6 +276,9 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = 0
+                    } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 4) {
+                        map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = getRandomInteger(5,8);
+                        //get_item(myN);
                     } else {
                         break
                     }
@@ -259,6 +294,9 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = 0
+                    }else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 4) {
+                            map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = getRandomInteger(5,8);
+                            //get_item(myN);
                     } else {
                         break
                     }
@@ -274,6 +312,9 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = 0
+                    }else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 4) {
+                        map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = getRandomInteger(5,8);
+                        //get_item(myN);
                     } else {
                         break
                     }
@@ -289,7 +330,10 @@ function draw() {
                         //壊れる壁なら消す
                     } else if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] = 0
-                    } else {
+                    }else if (map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] == 4) {
+                        map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] = getRandomInteger(5,8);
+                        //get_item(myN);
+                    } else{
                         break
                     }
                 }
@@ -358,4 +402,58 @@ window.onload = function () {
 }
 
 
+//アイテム
 
+function get_item(player_number, item_type) {
+    if (item_type == 5) {
+        if (player[player_number].bRange < 5) player[player_number].bRange+=1;
+        console.log("Power Up!");
+    } else if (item_type == 6) {
+        if (player[player_number].bRange > 1) player[player_number].bRange-=1;
+        console.log("Power Down!");
+    } else if (item_type == 7) {
+        if (player[player_number].gS < 10) player[player_number].gS+=1;
+        console.log("something for 7");
+    } else if (item_type == 8) {
+        if (player[player_number].gS > 2) player[player_number].gS-=1;
+        console.log("something for 8");
+    }
+}
+
+
+// アイテムID一覧（例：5〜8がアイテム）
+const Position_item_list = [5, 6, 7, 8];
+// グローバルor関数スコープなど状況によって適宜定義
+let items = [];
+
+function Position_item(player_number) {
+    const playerTileX = Math.round(player[player_number].gX / squareSize);
+    const playerTileY = Math.round(player[player_number].gY / squareSize);
+
+    // items = [] は残しても良いが、そもそもこの変数が必要なければ省略可
+    items = [];
+
+    // マップからアイテム座標一覧を収集
+    for (let y = 0; y < hblock; y++) {
+        for (let x = 0; x < wblock; x++) {
+            if (map.bombermap[y][x] >= 5 && map.bombermap[y][x] <= 8) {
+                items.push([y, x]);
+            }
+        }
+    }
+
+    for (let i = 0; i < items.length; i++) {
+        let itemY = items[i][0];
+        let itemX = items[i][1];
+
+        if (playerTileX === itemX && playerTileY === itemY) {
+            // タイル番号を取得
+            let item_type = map.bombermap[itemY][itemX];
+            // これを引数に渡して効果を発動
+            get_item(player_number, item_type);
+
+            // タイルを0(通路)に戻す
+            map.bombermap[itemY][itemX] = 0;
+        }
+    }
+}
