@@ -119,13 +119,14 @@ socket.on('map_up',() => {
         // ホストがマップ生成
         map.GenerateBreakWall();
         map.iteminWall();
-        socket.emit('save_map',{ room_id: roomId,bombermap: map.bombermap});
+        socket.emit('save_map',{ room_id: roomId, map: map});
     }
 });
 // マップの更新受信
-socket.on('maploader', (bombermap) => {
+socket.on('maploader', (mapData) => {
     if (myN !== 0) {
-        map.bombermap = bombermap;
+        map.bombermap = mapData.bombermap;
+        map.itemmap = mapData.itemmap
     }
 });
 
@@ -238,7 +239,7 @@ function draw() {
             } else if (map.bombermap[i][j] == 3) {
                 g.drawImage(bomb, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 4) {
-                g.drawImage(item_wall, j * squareSize, i * squareSize, squareSize, squareSize)
+                g.drawImage(user, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 5) {
                 g.drawImage(item_number1, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 6) {
@@ -274,7 +275,7 @@ function draw() {
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = 0
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] == 4) {
-                        map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = getRandomInteger(5,8);
+                        map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r] = map.itemmap[player[h].blastYX[i][0]][player[h].blastYX[i][1] - r];
                         //get_item(myN);
                     } else {
                         break
@@ -292,7 +293,7 @@ function draw() {
                     } else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 2) {
                         map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = 0
                     }else if (map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] == 4) {
-                            map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = getRandomInteger(5,8);
+                            map.bombermap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r] = map.itemmap[player[h].blastYX[i][0]][player[h].blastYX[i][1] + r];
                             //get_item(myN);
                     } else {
                         break
@@ -310,7 +311,7 @@ function draw() {
                     } else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = 0
                     }else if (map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] == 4) {
-                        map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = getRandomInteger(5,8);
+                        map.bombermap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]] = map.itemmap[player[h].blastYX[i][0] - r][player[h].blastYX[i][1]];
                         //get_item(myN);
                     } else {
                         break
@@ -328,7 +329,8 @@ function draw() {
                     } else if (map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] == 2) {
                         map.bombermap[player[h].blastYX[i][0] + r][player[h].blastYX[i][1]] = 0
                     }else if (map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] == 4) {
-                        map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] = getRandomInteger(5,8);
+                        map.bombermap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]] = map.itemmap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]];
+                        console.log(map.itemmap[player[h].blastYX[i][0]+r][player[h].blastYX[i][1]])
                         //get_item(myN);
                     } else{
                         break
@@ -388,12 +390,10 @@ window.onkeyup = function (ev) {
     gKey[ev.keyCode] = 0;
 }
 
-
 window.onload = function () {
     requestAnimationFrame(onPaint);
 
 }
-
 
 //アイテム
 
@@ -405,7 +405,7 @@ function get_item(player_number, item_type) {
         if (player[player_number].bRange > 1) player[player_number].bRange-=1;
         console.log("Power Down!");
     } else if (item_type == 7) {
-        if (player[player_number].gS < 10) player[player_number].gS+=1;
+        if (player[player_number].gS < 10) player[player_number].gS+=0.5;
         console.log("something for 7");
     } else if (item_type == 8) {
         if (player[player_number].gS > 2) player[player_number].gS-=1;
@@ -447,6 +447,12 @@ function Position_item(player_number) {
 
             // タイルを0(通路)に戻す
             map.bombermap[itemY][itemX] = 0;
+            
+            socket.emit('changes_map', {
+                cy: itemY, // 変更したマスの y 座標
+                cx: itemX, // 変更したマスの x 座標
+                mapData: 0 // そのマスの新しい値
+            });
         }
     }
 }
