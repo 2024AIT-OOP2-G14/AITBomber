@@ -275,4 +275,4 @@ def ranking():
 
 if __name__ == '__main__':
     # 本番環境では `gunicorn` を使って起動するため、`socketio.run()` は使わない
-    # socketio.run(app, host="0.0.0.0", port=8880, debug=True)  # ローカル開発用として使う場合
+    socketio.run(app, host="0.0.0.0", port=8880, debug=True)  # ローカル開発用として使う場合
