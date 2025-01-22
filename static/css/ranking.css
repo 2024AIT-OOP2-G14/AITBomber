@@ -1,0 +1,46 @@
+#rankinglogo{
+    border-radius: 5px; /* ボタンの角を丸める */
+    font-size: 7em;
+    margin-top: 5vh;
+    width:70%;
+    text-align: center;
+}
+
+#ranking-list{
+    list-style-position: inside; /* 順位番号をリスト内に含める */
+    list-style: none; /* 順位番号のデフォルトスタイルを消す（必要なら） */
+    text-align: center; /* テキストを中央に配置 */
+    margin: 0 auto; /* リスト自体を中央に配置 */
+    padding: 0;
+}
+
+#ranking-list li{
+    margin: 10px 0; /* リスト項目の間隔を調整 */
+    font-size: 3em; /* テキストサイズを調整（必要なら） */
+}
+
+#buttongroup2{
+    margin-top: 5%;
+    list-style: none; /* デフォルトのリストスタイルを削除 */
+    display: flex;
+    padding: 5% 10%;
+    justify-content: space-between;
+}
+
+#buttongroup2 a{
+    text-decoration: none; /* 下線を削除 */
+    color: #333; /* 任意のテキストカラー */
+    background-color:#e6e6e6;
+    font-size: 30px; /* 任意のフォントサイズ */
+    padding: 10px 20px;
+    border: 2px solid #333; /* 任意のボーダー */
+    border-radius: 5px; /* ボタンの角を丸める */
+    display: inline-block; /* リンクをボタン風にする */
+    transition: 0.3s; /* ホバー時のエフェクト */
+}
+
+#buttongroup2 a:hover {
+    background-color: #333; /* 背景色の変更 */
+    color: #fff; /* テキストカラーの変更 */
+    border-color: #fff; /* ボーダーカラーの変更 */
+}

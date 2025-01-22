@@ -52,18 +52,29 @@ section#update_room li {
     list-style-type: none;
 }
 
-div#startGameButton button {
-    background-color: #007bff;
-    color: white;
+#startGameButton{
+    list-style: none; /* デフォルトのリストスタイルを削除 */
+    display: flex;
+    padding: 5% 10%;
+    justify-content: space-between;
+}
+
+#startGameButton button {
+    text-decoration: none; /* 下線を削除 */
+    color: #333; /* 任意のテキストカラー */
+    background-color:#e6e6e6;
+    font-size: 30px; /* 任意のフォントサイズ */
     padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 10px;
+    border: 2px solid #333; /* 任意のボーダー */
+    border-radius: 5px; /* ボタンの角を丸める */
+    display: inline-block; /* リンクをボタン風にする */
+    transition: 0.3s; /* ホバー時のエフェクト */
 }
 
 div#startGameButton button:hover {
-    background-color: #0056b3;
+    background-color: #333; /* 背景色の変更 */
+    color: #fff; /* テキストカラーの変更 */
+    border-color: #fff; /* ボーダーカラーの変更 */
 }
 
 div#startGameButton button:focus {
