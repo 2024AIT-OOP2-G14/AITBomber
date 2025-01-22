@@ -242,7 +242,7 @@ function draw() {
             } else if (map.bombermap[i][j] == 3) {
                 g.drawImage(bomb, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 4) {
-                g.drawImage(user, j * squareSize, i * squareSize, squareSize, squareSize)
+                g.drawImage(kabe, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 5) {
                 g.drawImage(item_number1, j * squareSize, i * squareSize, squareSize, squareSize)
             } else if (map.bombermap[i][j] == 6) {
