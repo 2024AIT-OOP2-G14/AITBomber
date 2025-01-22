@@ -1,3 +1,5 @@
+const bYutori = 0.9
+
 class Player{
     bombLimiter = 180   //爆弾が爆発するまでのフレーム数（180で3秒）
     blastLimiter = 30   //爆風の持続フレーム数
@@ -111,6 +113,29 @@ class Player{
         }
         return false
     }
+
+    //その座標のプレーヤーが爆弾を踏んでいるか
+    stepOnBomb(nIB) {
+
+        for(var k=0; k<2; k++) {
+            if(nIB[k].length == 0) {
+                for(var i=0; i<this.bLimit;i++) {
+                    if(this.bYX[i][0]-bYutori < this.gY/squareSize && this.gY/squareSize < this.bYX[i][0]+bYutori && this.bYX[i][1]-bYutori < this.gX/squareSize && this.gX/squareSize < this.bYX[i][1]+bYutori) {
+                        if((nIB[0].length == 0 && nIB[1].length == 0) || !(JSON.stringify(nIB[0]) == JSON.stringify(this.bYX[i]) || JSON.stringify(nIB[1]) == JSON.stringify(this.bYX[i]))) {
+                            nIB[k] = this.bYX[i]
+                        }
+                    }    
+                }
+            }else {
+                if(!(nIB[k][0]-bYutori < this.gY/squareSize && this.gY/squareSize < nIB[k][0]+bYutori && nIB[k][1]-bYutori < this.gX/squareSize && this.gX/squareSize < nIB[k][1]+bYutori)) {
+                    nIB[k] = []
+                }
+            }
+
+        }
+        return nIB
+    }
+
 
     //実際の爆風の距離を計算
     explotionRange (i){

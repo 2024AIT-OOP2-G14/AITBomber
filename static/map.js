@@ -43,22 +43,36 @@ class Map{
     }
 
     //(x,y)の座標が壁の中にあるか判定（boolean）
-    isInsideWall(x,y,nowisIW) {
-        let isIW = false
+    isInsideWall(x,y,nowisIB) {
+        let iTW = false
         //壁全探索
         for(var i=0; i<hblock; i++){
             for(var j=0; j<wblock; j++){
-                if(this.bombermap[i][j]>=1){
+                if(this.bombermap[i][j] == 1 || this.bombermap[i][j] == 2 || this.bombermap[i][j] == 3)
                     //ある一つの壁の内側に、与えられた(x,y)が入っているか(0.9ではなく1にしてしまうと1pxの誤差で道に入れないので、ゆとりを持たせるために0.9にしている。)
-                    if((j-0.9)*(squareSize) < x && x < (j+0.9)*squareSize && (i-0.9)*squareSize < y && y < (i+0.9)*squareSize) {
-                        //今埋まっているかつ次いる埋まっている場所が爆弾ならば壁がない判定にする
-                        if(!(nowisIW&&(this.bombermap[i][j]==3))){
-                            isIW = true
-                        }                        
+                    if((j-bYutori)*(squareSize) < x && x < (j+bYutori)*squareSize && (i-bYutori)*squareSize < y && y < (i+bYutori)*squareSize) {
+
+                        //壁なら
+                        if(this.bombermap[i][j] == 1 || this.bombermap[i][j] == 2) {
+                            //console.log("wall")
+                            iTW = true
+                        }
+                        
+
+                        //移動前の座標以外の爆弾は壁とみなす（踏んでる爆弾があり、かつその爆弾以外を踏もうとしてるなら、それは壁）
+                        for(var k=0; k<2; k++) {
+                            if( !(nowisIB[0].length != 0 && nowisIB[1].length != 0) && nowisIB[k].length != 0 && !(i == nowisIB[k][0] &&  j == nowisIB[k][1] ) && this.bombermap[i][j] == 3) {
+                                //console.log("inBomb")
+                                iTW = true
+                            }
+                        }
+                        if((nowisIB[0].length == 0 && nowisIB[1].length == 0 ) && this.bombermap[i][j] == 3) {
+                            //console.log("outBomb")
+                            iTW = true
+                        }
                     }
-                }
             }
         }
-        return isIW
+        return iTW
     }
 }
