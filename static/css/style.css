@@ -1,29 +1,26 @@
 body{
-    background-image: url(../image/kabe.png);
-    background-size: 5%;
+    overflow: hidden;
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(to bottom,rgba(0,0,0,0.5),rgba(255,255,255,0.5)),url(../image/kabe.png);
+    background-repeat: repeat;
+    background-size: 100vh,5vh;
 }
+
 main{
     margin:auto;
+    margin-top: 1vh;
     width:70vw;
-    min-width: 400px;
+    min-width: 600px;
     height: 95vh;
     background-color: #fff;
+    overflow: hidden;
 }
 h1{
     font-size: 5em;
     margin:auto;
-    position:relative;
 }
 
-#titlelogo{
-    border:solid 3px rgb(8, 8, 8); /* 枠線追加 */
-    border-radius: 5px; /* ボタンの角を丸める */
-    font-size: 5em;
-    margin:auto;
-    width:70%;
-    text-align: center;
-    position:relative;
-}
 
 .roomid{
     text-align: right;
@@ -57,41 +54,7 @@ h1{
     box-sizing: border-box; */
 }
 
-.select {
-    list-style: none; /* デフォルトのリストスタイルを削除 */
-    padding: 0;
-    margin: 0 ;
-}
 
-.select li {
-    margin: 10px 0; /* リストアイテム間の余白 */
-}
-
-.select li a {
-    text-decoration: none; /* 下線を削除 */
-    color: #333; /* 任意のテキストカラー */
-    font-size: 30px; /* 任意のフォントサイズ */
-    padding: 10px 20px;
-    border: 2px solid #333; /* 任意のボーダー */
-    border-radius: 5px; /* ボタンの角を丸める */
-    display: inline-block; /* リンクをボタン風にする */
-    transition: 0.3s; /* ホバー時のエフェクト */
-    position:absolute;
-    left:40%;
-    
-}
-.select li:first-child a{
-    top:30%;
-}
-.select li:last-child a{
-    top:50%;
-}
-
-.select li a:hover {
-    background-color: #333; /* 背景色の変更 */
-    color: #fff; /* テキストカラーの変更 */
-    border-color: #fff; /* ボーダーカラーの変更 */
-}
 
 #joinRoomButton {
     text-decoration: none; /* 下線を削除 */
