@@ -111,10 +111,14 @@ var map = new Map(wblock, hblock);
 
 socket.on('map_up',() => {
     if (myN === 0) {
+         // URLのクエリパラメータからroom_idを取得
+        const params = new URLSearchParams(window.location.search);
+        const roomId = params.get('room_id');
+
         // ホストがマップ生成
         map.GenerateBreakWall();
         map.iteminWall();
-        socket.emit('save_map', map.bombermap);
+        socket.emit('save_map',{ room_id: roomId,bombermap: map.bombermap});
     }
 });
 // マップの更新受信
@@ -136,7 +140,7 @@ socket.on('connect', () => {
          console.error('room_id is not found in URL parameters');
      }
 
-    socket.emit('connect_counter',countmyN);
+    socket.emit('connect_count', { room_id: roomId,countmyN: countmyN});
 });
 
 
