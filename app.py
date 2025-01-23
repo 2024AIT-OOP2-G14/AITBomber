@@ -278,5 +278,6 @@ def ranking():
     )
 
 if __name__ == '__main__':
+    logging.info(" - Local: http://127.0.0.1:8080")
     socketio.run(app, host="0.0.0.0", port=8080, debug=False)  # ローカル開発用として使う場合
     #pass

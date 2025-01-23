@@ -50,7 +50,8 @@ class Player{
             socket.emit('changes_map', {
                 cy: this.bYX[this.nextBombID][0], // 変更したマスの y 座標
                 cx: this.bYX[this.nextBombID][1], // 変更したマスの x 座標
-                mapData: 3 // そのマスの新しい値
+                mapData: 3, // そのマスの新しい値
+                room_id: roomId  // ルームid
             });
 
             gTimer += 16.67;
